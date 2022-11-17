@@ -2,6 +2,7 @@ stages:
   - validate
   - plan
   - apply
+  - destroy
 
 image:
   name: hashicorp/terraform:light
@@ -30,10 +31,19 @@ plan:
   artifacts:
     paths:
       - planfile
+
 apply:
   stage: apply
   script:
     - terraform apply -input=false "planfile"
+  dependencies:
+    - plan
+  when: manual
+
+destroy:
+  stage: destroy
+  script:
+    - terraform destroy -input=false "planfile"
   dependencies:
     - plan
   when: manual
