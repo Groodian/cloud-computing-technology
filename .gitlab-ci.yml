@@ -1,3 +1,6 @@
+# https://www.bitslovers.com/run-terraform-from-gitlab-ci/
+# https://medium.com/geekculture/how-to-run-terraform-script-using-gitlab-ci-cd-b6f448ab0232
+
 stages:
   - validate
   - plan
@@ -10,20 +13,22 @@ image:
     - '/usr/bin/env'
     - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
-before_script:
-  # - export AWS_ACCESS_KEY=${AWS_ACCESS_KEY_ID}
-  # - export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-  - rm -rf .terraform
-  - terraform --version
-  - terraform init
 
 validate:
   stage: validate
+  before_script:
+    - rm -rf .terraform
+    - terraform --version
+    - terraform init
   script:
     - terraform validate
 
 plan:
   stage: plan
+  before_script:
+    - rm -rf .terraform
+    - terraform --version
+    - terraform init
   script:
     - terraform plan -out "planfile"
   dependencies:
