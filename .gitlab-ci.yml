@@ -1,40 +1,69 @@
-# To contribute improvements to CI/CD templates, please follow the Development guide at:
-# https://docs.gitlab.com/ee/development/cicd/templates.html
-# This specific template is located at:
-# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Terraform.gitlab-ci.yml
+# https://code.fbi.h-da.de/help/user/infrastructure/iac/terraform_state.md
+# https://gitlab.com/gitlab-org/configure/examples/gitlab-terraform-aws/-/blob/master/.gitlab-ci.yml
 
-include:
-  - template: Terraform/Base.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Terraform/Base.gitlab-ci.yml
-  - template: Jobs/SAST-IaC.gitlab-ci.yml   # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Jobs/SAST-IaC.gitlab-ci.yml
+image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
+variables:
+  TF_ROOT: ${CI_PROJECT_DIR}
+  TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${CI_PROJECT_NAME}
+
+cache:
+  key: example-production
+  paths:
+    - ${TF_ROOT}/.terraform
+
+before_script:
+  - cd ${TF_ROOT}
 
 stages:
+  - prepare
   - validate
-  - test
   - build
   - deploy
-  - cleanup
+  - destroy
 
-fmt:
-  extends: .terraform:fmt
-  needs: []
+init:
+  stage: prepare
+  script:
+    - gitlab-terraform init
 
 validate:
-  extends: .terraform:validate
-  needs: []
+  stage: validate
+  script:
+    - gitlab-terraform init
+    - gitlab-terraform validate
 
-build:
-  extends: .terraform:build
+plan:
+  stage: build
+  script:
+    - gitlab-terraform plan
+    - gitlab-terraform plan-json
+  artifacts:
+    name: plan
+    paths:
+      - ${TF_ROOT}/plan.cache
+    reports:
+      terraform: ${TF_ROOT}/plan.json
 
-deploy:
-  extends: .terraform:deploy
+# Separate apply job for manual launching Terraform as it can be destructive
+# action.
+apply:
+  stage: deploy
+  environment:
+    name: production
+  script:
+    - gitlab-terraform apply
   dependencies:
-    - build
-  environment:
-    name: $TF_STATE_NAME
+    - plan
   when: manual
+  only:
+    - master
 
-cleanup:
-  extends: .terraform:destroy
+destroy:
+  stage: destroy
   environment:
-    name: $TF_STATE_NAME
+    name: production
+  script:
+    - gitlab-terraform destroy
   when: manual
+  only:
+    - master
