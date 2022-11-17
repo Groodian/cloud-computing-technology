@@ -40,6 +40,7 @@ plan:
 apply:
   stage: apply
   script:
+    - terraform init
     - terraform apply -input=false "planfile"
   dependencies:
     - plan
