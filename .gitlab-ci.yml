@@ -50,6 +50,4 @@ destroy:
   script:
     - terraform init
     - terraform destroy --auto-approve 
-  dependencies:
-    - plan
   when: manual
