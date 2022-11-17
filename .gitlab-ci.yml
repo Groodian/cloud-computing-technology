@@ -55,8 +55,6 @@ apply:
   dependencies:
     - plan
   when: manual
-  only:
-    - master
 
 destroy:
   stage: destroy
@@ -65,5 +63,3 @@ destroy:
   script:
     - gitlab-terraform destroy
   when: manual
-  only:
-    - master
