@@ -43,7 +43,7 @@ apply:
 destroy:
   stage: destroy
   script:
-    - terraform destroy -input=false "planfile"
+    - terraform destroy -input=false 
   dependencies:
     - plan
   when: manual
