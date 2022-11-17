@@ -7,30 +7,20 @@ stages:
   - apply
   - destroy
 
-image:
-  name: hashicorp/terraform:light
-  entrypoint:
-    - '/usr/bin/env'
-    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-
 
 validate:
   stage: validate
   before_script:
     - rm -rf .terraform
-    - terraform --version
-    - terraform init
+    - gitlab-terraform --version
+    - gitlab-terraform init
   script:
-    - terraform validate
+    - gitlab-terraform validate
 
 plan:
   stage: plan
-  before_script:
-    - rm -rf .terraform
-    - terraform --version
-    - terraform init
   script:
-    - terraform plan -out "planfile"
+    - gitlab-terraform plan -out "planfile"
   dependencies:
     - validate
   artifacts:
@@ -40,8 +30,7 @@ plan:
 apply:
   stage: apply
   script:
-    - terraform init
-    - terraform apply -input=false "planfile"
+    - gitlab-terraform apply -input=false "planfile"
   dependencies:
     - plan
   when: manual
@@ -49,6 +38,5 @@ apply:
 destroy:
   stage: destroy
   script:
-    - terraform init
-    - terraform destroy --auto-approve 
+    - gitlab-terraform destroy --auto-approve 
   when: manual
