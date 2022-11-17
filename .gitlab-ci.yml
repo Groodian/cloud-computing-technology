@@ -1,42 +1,40 @@
-# https://www.bitslovers.com/run-terraform-from-gitlab-ci/
-# https://medium.com/geekculture/how-to-run-terraform-script-using-gitlab-ci-cd-b6f448ab0232
+# To contribute improvements to CI/CD templates, please follow the Development guide at:
+# https://docs.gitlab.com/ee/development/cicd/templates.html
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Terraform.gitlab-ci.yml
+
+include:
+  - template: Terraform/Base.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Terraform/Base.gitlab-ci.yml
+  - template: Jobs/SAST-IaC.gitlab-ci.yml   # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Jobs/SAST-IaC.gitlab-ci.yml
 
 stages:
   - validate
-  - plan
-  - apply
-  - destroy
+  - test
+  - build
+  - deploy
+  - cleanup
 
+fmt:
+  extends: .terraform:fmt
+  needs: []
 
 validate:
-  stage: validate
-  before_script:
-    - rm -rf .terraform
-    - gitlab-terraform --version
-    - gitlab-terraform init
-  script:
-    - gitlab-terraform validate
+  extends: .terraform:validate
+  needs: []
 
-plan:
-  stage: plan
-  script:
-    - gitlab-terraform plan -out "planfile"
-  dependencies:
-    - validate
-  artifacts:
-    paths:
-      - planfile
+build:
+  extends: .terraform:build
 
-apply:
-  stage: apply
-  script:
-    - gitlab-terraform apply -input=false "planfile"
+deploy:
+  extends: .terraform:deploy
   dependencies:
-    - plan
+    - build
+  environment:
+    name: $TF_STATE_NAME
   when: manual
 
-destroy:
-  stage: destroy
-  script:
-    - gitlab-terraform destroy --auto-approve 
+cleanup:
+  extends: .terraform:destroy
+  environment:
+    name: $TF_STATE_NAME
   when: manual
