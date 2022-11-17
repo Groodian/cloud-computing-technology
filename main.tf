@@ -135,7 +135,7 @@ resource "google_compute_instance" "debian_master" {
     }
     inline = [
       "sudo apt -y update",
-      "sudo apt -y install nginx containerd.io runc git",
+      "sudo apt -y install nginx git",
       "sudo nginx -v",
     ]
   }
