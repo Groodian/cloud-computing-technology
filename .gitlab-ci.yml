@@ -54,7 +54,8 @@ apply:
     - gitlab-terraform apply
   dependencies:
     - plan
-    
+  when: manual
+
 destroy:
   stage: destroy
   environment:
