@@ -3,11 +3,11 @@ variable "project" {}
 variable "credentials_file" {}
 
 variable "region" {
-  default = "europe-west1"
+  default = "europe-west3"
 }
 
 variable "zone" {
-  default = "europe-west1-b"
+  default = "europe-west3-c"
 }
 
 variable "user" {
@@ -18,12 +18,6 @@ variable "email" {
   type = string
 }
 
-variable "privatekeypath" {
-  type    = string
-  default = "~/.ssh/id_rsa"
-}
-
-variable "publickeypath" {
-  type    = string
-  default = "~/.ssh/id_rsa.pub"
+variable "worker_count" {
+  default = 2
 }

@@ -9,16 +9,15 @@ terraform {
     }
   }
 
-  backend "http" {
-  }
+  //backend "http" {
+  //}
 }
 
 provider "google" {
-  credentials = file(var.credentials_file)
-
-  project = var.project
-  region  = var.region
-  zone    = var.zone
+  credentials   = file(var.credentials_file)
+  project       = var.project
+  region        = var.region
+  zone          = var.zone
 }
 
 resource "google_project_service" "cloud_resource_manager" {
@@ -50,25 +49,17 @@ resource "local_file" "ssh_private_key_pem" {
   file_permission = "0600"
 }
 
-resource "google_compute_network" "vpc_network" {
-  name = "my-network"
+resource "google_compute_network" "kubernetes_network" {
+  name = "kubernetes-network"
 }
 
-resource "google_compute_address" "static_ip_master" {
-  name = "debian-master"
-}
-
-resource "google_compute_address" "static_ip_worker_1" {
-  name = "debian-worker-1"
-}
-
-resource "google_compute_address" "static_ip_worker_2" {
-  name = "debian-worker-2"
+resource "google_compute_address" "static_ip_kubernetes_master" {
+  name = "kubernetes-master"
 }
 
 resource "google_compute_firewall" "allow_ssh" {
   name          = "allow-ssh"
-  network       = google_compute_network.vpc_network.name
+  network       = google_compute_network.kubernetes_network.name
   target_tags   = ["allow-ssh"] // this targets our tagged VM
   source_ranges = ["0.0.0.0/0"]
 
@@ -80,7 +71,7 @@ resource "google_compute_firewall" "allow_ssh" {
 
 resource "google_compute_firewall" "allow_http" {
   name          = "allow-http"
-  network       = google_compute_network.vpc_network.name
+  network       = google_compute_network.kubernetes_network.name
   target_tags   = ["allow-http"] // this targets our tagged VM
   source_ranges = ["0.0.0.0/0"]
 
@@ -90,9 +81,9 @@ resource "google_compute_firewall" "allow_http" {
   }
 }
 
-resource "google_compute_firewall" "allow_kuebernetes_api" {
+resource "google_compute_firewall" "allow_kubernetes_api" {
   name          = "allow-kubernetes-api"
-  network       = google_compute_network.vpc_network.name
+  network       = google_compute_network.kubernetes_network.name
   target_tags   = ["allow-http"] // this targets our tagged VM
   source_ranges = ["0.0.0.0/0"]
 
@@ -104,9 +95,9 @@ resource "google_compute_firewall" "allow_kuebernetes_api" {
 
 data "google_client_openid_userinfo" "me" {}
 
-resource "google_compute_instance" "debian_master" {
-  name         = "debian-master"
-  machine_type = "f1-micro"
+resource "google_compute_instance" "kubernetes_master" {
+  name         = "kubernetes-master"
+  machine_type = "e2-micro"
   tags         = ["allow-ssh","allow-http","allow-kubernetes-api"] // this receives the firewall rule
 
   metadata = {
@@ -116,82 +107,81 @@ resource "google_compute_instance" "debian_master" {
   boot_disk {
     initialize_params {
       image = "debian-cloud/debian-11"
-      size = 50
+      size = 40
     }
   }
 
   network_interface {
-    network = google_compute_network.vpc_network.name
+    network = google_compute_network.kubernetes_network.name
 
     access_config {
-      nat_ip = google_compute_address.static_ip_master.address
+      nat_ip = google_compute_address.static_ip_kubernetes_master.address
     }
   }
 
   provisioner "remote-exec" {
     connection {
-      host        = google_compute_address.static_ip_master.address
+      host        = google_compute_address.static_ip_kubernetes_master.address
       type        = "ssh"
       user        = var.user
-      timeout     = "500s"
+      timeout     = "180s"
       private_key = tls_private_key.ssh.private_key_pem
     }
+
     inline = [
-      "sudo apt -y update",
-      "sudo apt -y install nginx git",
-      "sudo nginx -v",
+      "echo 'Wait until SSH is ready'",
+    ]
+  }
+
+}
+
+resource "google_compute_instance" "kubernetes_worker" {
+  name         = "kubernetes-worker-${count.index}"
+  machine_type = "e2-micro"
+  tags         = ["allow-ssh"] // this receives the firewall rule
+  count        = var.worker_count
+
+  metadata = {
+    ssh-keys = "${var.user}:${tls_private_key.ssh.public_key_openssh}"
+  }
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
+      size = 40
+    }
+  }
+
+  network_interface {
+    network = google_compute_network.kubernetes_network.name
+
+    access_config {
+    }
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      host        = google_compute_address.static_ip_kubernetes_master.address
+      type        = "ssh"
+      user        = var.user
+      timeout     = "180s"
+      private_key = tls_private_key.ssh.private_key_pem
+    }
+
+    inline = [
+      "echo 'Wait until SSH is ready'",
     ]
   }
 }
 
-resource "google_compute_instance" "debian_worker_1" {
-  name         = "debian-worker-1"
-  machine_type = "f1-micro"
-  tags         = ["allow-ssh"] // this receives the firewall rule
-
-  metadata = {
-    ssh-keys = "${var.user}:${tls_private_key.ssh.public_key_openssh}"
-    //ssh-keys = "${split("@", data.google_client_openid_userinfo.me.email)[0]}:${tls_private_key.ssh.public_key_openssh}"
-  }
-
-  boot_disk {
-    initialize_params {
-      image = "debian-cloud/debian-11"
-      size = 50
-    }
-  }
-
-  network_interface {
-    network = google_compute_network.vpc_network.name
-
-    access_config {
-      nat_ip = google_compute_address.static_ip_worker_1.address
-    }
-  }
-}
-
-resource "google_compute_instance" "debian_worker_2" {
-  name         = "debian-worker-2"
-  machine_type = "f1-micro"
-  tags         = ["allow-ssh"] // this receives the firewall rule
-
-  metadata = {
-    ssh-keys = "${var.user}:${tls_private_key.ssh.public_key_openssh}"
-    //ssh-keys = "${split("@", data.google_client_openid_userinfo.me.email)[0]}:${tls_private_key.ssh.public_key_openssh}"
-  }
-
-  boot_disk {
-    initialize_params {
-      image = "debian-cloud/debian-11"
-      size = 50
-    }
-  }
-
-  network_interface {
-    network = google_compute_network.vpc_network.name
-
-    access_config {
-      nat_ip = google_compute_address.static_ip_worker_2.address
-    }
-  }
+resource "local_file" "ansible_inventory" {
+  content = templatefile("ansible/inventory.tmpl", {
+    user                        = var.user,
+    key_path                    = "../.ssh/google_compute_engine",
+    kubernetes_master_address   = google_compute_instance.kubernetes_master.network_interface.0.access_config.0.nat_ip,
+    kubernetes_master_name      = google_compute_instance.kubernetes_master.name,
+    kubernetes_workers_address  = google_compute_instance.kubernetes_worker.*.network_interface.0.access_config.0.nat_ip,
+    kubernetes_workers_name     = google_compute_instance.kubernetes_worker.*.name,
+  })
+  filename = "ansible/inventory"
 }

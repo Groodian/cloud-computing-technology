@@ -1,15 +1,10 @@
-output "master_ip" {
-  value = google_compute_address.static_ip_master.address
+output "kubernetes_master_ip" {
+  value = google_compute_address.static_ip_kubernetes_master.address
 }
 
-output "worker_ip_1" {
-  value = google_compute_address.static_ip_worker_1.address
+output "kubernetes_worker_ip" {
+  value = google_compute_instance.kubernetes_worker.*.network_interface.0.access_config.0.nat_ip
 }
-
-output "worker_ip_2" {
-  value = google_compute_address.static_ip_worker_2.address
-}
-
 
 output "ssh_private_key" {
   value     = tls_private_key.ssh.private_key_pem
