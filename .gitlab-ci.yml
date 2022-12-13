@@ -22,7 +22,7 @@ before_script:
   - apk add ansible
   - ansible --version
   - chmod -R 700 .
-  - apk --update add openssh-client
+  - apk add openssh
   - eval $(ssh-agent -s)
   - cd ${TF_ROOT}
 
