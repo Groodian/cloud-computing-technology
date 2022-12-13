@@ -9,6 +9,8 @@ cache:
     - ${TF_ROOT}/.terraform.lock.hcl
     - ${TF_ROOT}/terraform.tfstate
     - ${TF_ROOT}/terraform.tfstate.backup
+    - ${TF_ROOT}/plan
+    - ${TF_ROOT}/plan.json
     - ${TF_ROOT}/.ssh
     - ${TF_ROOT}/ansible/inventory
   when: always
@@ -17,26 +19,24 @@ before_script:
   - cd ${TF_ROOT}
 
 stages:
-  - build_image
-  - prepare
+  - init
   - validate
-  - build
-  - deploy
+  - plan
+  - apply
   - destroy
 
 init:
-  stage: prepare
+  stage: init
   script:
     - terraform init
 
 validate:
   stage: validate
   script:
-    - terraform init
     - terraform validate
 
 plan:
-  stage: build
+  stage: plan
   script:
     - terraform plan -out=${TF_ROOT}/plan
     - terraform show -json ${TF_ROOT}/plan | jq > ${TF_ROOT}/plan.json
@@ -48,11 +48,11 @@ plan:
       terraform: ${TF_ROOT}/plan.json
 
 apply:
-  stage: deploy
+  stage: apply
   environment:
     name: production
   script:
-    - terraform apply ${TF_ROOT}/plan -auto-approve
+    - terraform apply ${TF_ROOT}/plan
   dependencies:
     - plan
   when: manual
