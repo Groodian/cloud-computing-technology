@@ -3,7 +3,7 @@ FROM ubuntu:latest
 # install dependencies
 RUN \
 apt-get update -y && \
-apt-get install -y wget gpg gnupg software-properties-common jq
+apt-get install -y wget gpg gnupg software-properties-common jq openssh-client
 
 # install terraform
 RUN \

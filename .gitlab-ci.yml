@@ -63,6 +63,13 @@ apply:
     name: production
   script:
     - terraform apply ${TF_ROOT}/plan
+  artifacts:
+    name: apply
+    paths:
+    - ${TF_ROOT}/terraform.tfstate
+    - ${TF_ROOT}/terraform.tfstate.backup
+    - ${TF_ROOT}/.ssh
+    - ${TF_ROOT}/ansible/inventory
   dependencies:
     - init
     - validate
@@ -75,4 +82,9 @@ destroy:
     name: production
   script:
     - terraform destroy -auto-approve
+  dependencies:
+    - init
+    - validate
+    - plan
+    - apply
   when: manual
