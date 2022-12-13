@@ -1,36 +1,4 @@
-build_image:
-  stage: build_image
-  services:
-    - name: docker:dind
-      entrypoint: ["env", "-u", "DOCKER_HOST"]
-      command: ["dockerd-entrypoint.sh"]
-  variables:
-    DOCKER_HOST: tcp://docker:2375/
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
-  image: docker:latest
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - docker pull $CI_REGISTRY_IMAGE:latest || true
-  # Default branch leaves tag empty (= latest tag)
-  # All other branches are tagged with the escaped branch name (commit ref slug)
-  script:
-    - |
-      if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
-        tag=""
-        echo "Running on default branch '$CI_DEFAULT_BRANCH': tag = 'latest'"
-      else
-        tag=":$CI_COMMIT_REF_SLUG"
-        echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
-      fi
-    - docker build --pull --cache-from $CI_REGISTRY_IMAGE:latest -t "$CI_REGISTRY_IMAGE${tag}" .
-    - docker push "$CI_REGISTRY_IMAGE${tag}"
-  # Run this job in a branch where a Dockerfile has changed
-  only:
-    changes:
-      - Dockerfile
-
-image: $CI_REGISTRY_IMAGE
+image: ubuntu:latest
 variables:
   TF_ROOT: ${CI_PROJECT_DIR}
 
@@ -46,6 +14,15 @@ cache:
   when: always
 
 before_script:
+  - apt-get update -y
+  - apt-get install -y wget
+  - wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+  - echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+  - apt-get update -y
+  - apt-get install -y terraform
+  - apt-get install -y python3-pip
+  - pip3 install --upgrade pip
+  - python3 -m pip install --user ansible 
   - cd ${TF_ROOT}
 
 stages:
