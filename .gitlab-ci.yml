@@ -7,9 +7,13 @@ variables:
   TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${CI_PROJECT_NAME}
 
 cache:
-  key: example-production
+  key: terraform-cache
   paths:
     - ${TF_ROOT}/.terraform
+    - ${TF_ROOT}/.terraform.lock.hcl
+    - ${TF_ROOT}/terraform.tfstate
+    - ${TF_ROOT}/terraform.tfstate.backup
+    - ${TF_ROOT}/.ssh
   when: always
 
 before_script:
