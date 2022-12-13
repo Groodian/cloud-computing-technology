@@ -1,0 +1,20 @@
+- hosts: 'workers, masters'
+  become: yes
+  tasks:
+     - name: install acl
+       shell: |
+               sudo apt-get -y update
+               sudo apt-get -y upgrade
+               sudo apt-get -y install acl
+
+- name: create the kube user account
+  ansible.builtin.import_playbook: users.yml
+
+- name: install kubernetes
+  ansible.builtin.import_playbook: install-kubernetes.yml
+
+- name: configure masters
+  ansible.builtin.import_playbook: masters.yml
+
+- name: let the workers join the cluster
+  ansible.builtin.import_playbook: join-workers.yml

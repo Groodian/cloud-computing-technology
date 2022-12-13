@@ -5,12 +5,8 @@ terraform {
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "3.1.0"
     }
   }
-
-  //backend "http" {
-  //}
 }
 
 provider "google" {
@@ -37,15 +33,17 @@ provider "tls" {
 resource "tls_private_key" "ssh" {
   algorithm = "RSA"
   rsa_bits  = 4096
-
-  provisioner "local-exec" { 
-    command = "echo '${tls_private_key.ssh.private_key_pem}' > ./google_compute_engine; chmod 400 ./google_compute_engine"
-  }
 }
 
 resource "local_file" "ssh_private_key_pem" {
-  content         = tls_private_key.ssh.private_key_pem
+  content         = tls_private_key.ssh.private_key_openssh
   filename        = ".ssh/google_compute_engine"
+  file_permission = "0600"
+}
+
+resource "local_file" "ssh_public_key_pem" {
+  content         = tls_private_key.ssh.public_key_openssh
+  filename        = ".ssh/google_compute_engine.pub"
   file_permission = "0600"
 }
 
@@ -97,7 +95,7 @@ data "google_client_openid_userinfo" "me" {}
 
 resource "google_compute_instance" "kubernetes_master" {
   name         = "kubernetes-master"
-  machine_type = "e2-micro"
+  machine_type = "e2-medium"
   tags         = ["allow-ssh","allow-http","allow-kubernetes-api"] // this receives the firewall rule
 
   metadata = {
@@ -137,7 +135,7 @@ resource "google_compute_instance" "kubernetes_master" {
 
 resource "google_compute_instance" "kubernetes_worker" {
   name         = "kubernetes-worker-${count.index}"
-  machine_type = "e2-micro"
+  machine_type = "e2-medium"
   tags         = ["allow-ssh"] // this receives the firewall rule
   count        = var.worker_count
 
@@ -184,4 +182,9 @@ resource "local_file" "ansible_inventory" {
     kubernetes_workers_name     = google_compute_instance.kubernetes_worker.*.name,
   })
   filename = "ansible/inventory"
+
+  provisioner "local-exec" {
+    working_dir = "ansible/"
+    command     = "ansible-playbook main.yml"
+  }
 }
