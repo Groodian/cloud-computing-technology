@@ -28,3 +28,5 @@ override.tf.json
 .terraform.lock.hcl
 .ssh/*
 ansible/inventory
+plan
+plan.json

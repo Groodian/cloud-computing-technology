@@ -29,11 +29,18 @@ init:
   stage: init
   script:
     - terraform init
+  artifacts:
+    name: init
+    paths:
+    - ${TF_ROOT}/.terraform
+    - ${TF_ROOT}/.terraform.lock.hcl
 
 validate:
   stage: validate
   script:
     - terraform validate
+  dependencies:
+    - init
 
 plan:
   stage: plan
@@ -46,6 +53,9 @@ plan:
       - ${TF_ROOT}/plan
     reports:
       terraform: ${TF_ROOT}/plan.json
+  dependencies:
+    - init
+    - validate
 
 apply:
   stage: apply
@@ -54,6 +64,8 @@ apply:
   script:
     - terraform apply ${TF_ROOT}/plan
   dependencies:
+    - init
+    - validate
     - plan
   when: manual
 
