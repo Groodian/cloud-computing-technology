@@ -15,7 +15,7 @@ cache:
 before_script:
   - apk update
   - apk add ansible
-  - chmod -v 700 $(pwd)
+  - chmod -v -R 700 .
   - cd ${TF_ROOT}
 
 stages:
