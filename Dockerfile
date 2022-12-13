@@ -9,4 +9,4 @@ apt-get update -y \
 apt-get install -y terraform \
 apt-get install -y python3-pip \
 pip3 install --upgrade pip \
-python3 -m pip install --user ansible
+python3 -m pip install --user ansible 
