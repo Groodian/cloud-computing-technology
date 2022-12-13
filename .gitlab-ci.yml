@@ -1,10 +1,19 @@
-# https://code.fbi.h-da.de/help/user/infrastructure/iac/terraform_state.md
-# https://gitlab.com/gitlab-org/configure/examples/gitlab-terraform-aws/-/blob/master/.gitlab-ci.yml
+build_image:
+  stage: build_image
+  image: docker
+  services:
+    - docker:dind
+  script: 
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+    - docker build -t $CI_REGISTRY_IMAGE .
+    - docker push $CI_REGISTRY_IMAGE
+  only:
+    changes:
+      - Dockerfile
 
-image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
+image: $CI_REGISTRY_IMAGE
 variables:
   TF_ROOT: ${CI_PROJECT_DIR}
-  TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${CI_PROJECT_NAME}
 
 cache:
   key: terraform-cache
@@ -18,16 +27,10 @@ cache:
   when: always
 
 before_script:
-  - apk update
-  - apk add ansible
-  - ansible --version
-  - chmod -R 700 .
-  - mkdir ~/tmp
-  - apk add openssh
-  - eval $(ssh-agent -s)
   - cd ${TF_ROOT}
 
 stages:
+  - build_image
   - prepare
   - validate
   - build
@@ -37,19 +40,19 @@ stages:
 init:
   stage: prepare
   script:
-    - gitlab-terraform init
+    - terraform init
 
 validate:
   stage: validate
   script:
-    - gitlab-terraform init
-    - gitlab-terraform validate
+    - terraform init
+    - terraform validate
 
 plan:
   stage: build
   script:
-    - gitlab-terraform plan
-    - gitlab-terraform plan-json
+    - terraform plan
+    - terraform plan-json
   artifacts:
     name: plan
     paths:
@@ -57,14 +60,12 @@ plan:
     reports:
       terraform: ${TF_ROOT}/plan.json
 
-# Separate apply job for manual launching Terraform as it can be destructive
-# action.
 apply:
   stage: deploy
   environment:
     name: production
   script:
-    - gitlab-terraform apply
+    - terraform apply
   dependencies:
     - plan
   when: manual
@@ -74,5 +75,5 @@ destroy:
   environment:
     name: production
   script:
-    - gitlab-terraform destroy
+    - terraform destroy
   when: manual
