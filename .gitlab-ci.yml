@@ -14,12 +14,16 @@ cache:
     - ${TF_ROOT}/terraform.tfstate
     - ${TF_ROOT}/terraform.tfstate.backup
     - ${TF_ROOT}/.ssh
+    - ${TF_ROOT}/ansible/inventory
   when: always
 
 before_script:
   - apk update
   - apk add ansible
-  - chmod -v -R 700 .
+  - ansible --version
+  - chmod -R 700 .
+  - apk --update add openssh-client
+  - eval $(ssh-agent -s)
   - cd ${TF_ROOT}
 
 stages:
