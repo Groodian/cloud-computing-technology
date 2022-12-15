@@ -57,6 +57,9 @@ apply:
   environment:
     name: production
   script:
+    - gitlab-terraform -version
+    - ansible --version
+    - ansible-playbook --version
     - gitlab-terraform apply
   dependencies:
     - init
