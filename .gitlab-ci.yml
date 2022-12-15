@@ -1,19 +1,11 @@
-image: registry.code.fbi.h-da.de/cloud-computing-technology/2022_wise/group_a_2:latest
+image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
 variables:
   TF_ROOT: ${CI_PROJECT_DIR}
 
 cache:
-  key: terraform-cache
+  key: production
   paths:
     - ${TF_ROOT}/.terraform
-    - ${TF_ROOT}/.terraform.lock.hcl
-    - ${TF_ROOT}/terraform.tfstate
-    - ${TF_ROOT}/terraform.tfstate.backup
-    - ${TF_ROOT}/plan
-    - ${TF_ROOT}/plan.json
-    - ${TF_ROOT}/.ssh
-    - ${TF_ROOT}/ansible/inventory
-  when: always
 
 before_script:
   - cd ${TF_ROOT}
@@ -28,51 +20,34 @@ stages:
 init:
   stage: init
   script:
-    - terraform init
-  artifacts:
-    name: init
-    paths:
-    - ${TF_ROOT}/.terraform
-    - ${TF_ROOT}/.terraform.lock.hcl
+    - gitlab-terraform init
 
 validate:
   stage: validate
   script:
-    - terraform validate
-  dependencies:
-    - init
+    - gitlab-terraform validate
 
 plan:
   stage: plan
   script:
-    - terraform plan -out=${TF_ROOT}/plan
-    - terraform show -json ${TF_ROOT}/plan | jq > ${TF_ROOT}/plan.json
+    - gitlab-terraform plan
+    - gitlab-terraform plan-json
   artifacts:
     name: plan
     paths:
-      - ${TF_ROOT}/plan
+      - ${TF_ROOT}/plan.cache
     reports:
       terraform: ${TF_ROOT}/plan.json
-  dependencies:
-    - init
-    - validate
 
+# Separate apply job for manual launching Terraform as it can be destructive
+# action.
 apply:
   stage: apply
   environment:
     name: production
   script:
-    - terraform apply ${TF_ROOT}/plan
-  artifacts:
-    name: apply
-    paths:
-    - ${TF_ROOT}/terraform.tfstate
-    - ${TF_ROOT}/terraform.tfstate.backup
-    - ${TF_ROOT}/.ssh
-    - ${TF_ROOT}/ansible/inventory
+    - gitlab-terraform apply ${TF_ROOT}/plan.cache
   dependencies:
-    - init
-    - validate
     - plan
   when: manual
 
@@ -81,10 +56,5 @@ destroy:
   environment:
     name: production
   script:
-    - terraform destroy -auto-approve
-  dependencies:
-    - init
-    - validate
-    - plan
-    - apply
+    - gitlab-terraform destroy
   when: manual
