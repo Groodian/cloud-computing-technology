@@ -3,9 +3,11 @@ variables:
   TF_ROOT: ${CI_PROJECT_DIR}
 
 cache:
-  key: production
+  key: terraform-cache
   paths:
     - ${TF_ROOT}/.terraform
+    - ${TF_ROOT}/.terraform.lock.hcl
+  when: always
 
 before_script:
   - cd ${TF_ROOT}
@@ -21,11 +23,18 @@ init:
   stage: init
   script:
     - gitlab-terraform init
+  artifacts:
+    name: init
+    paths:
+    - ${TF_ROOT}/.terraform
+    - ${TF_ROOT}/.terraform.lock.hcl
 
 validate:
   stage: validate
   script:
     - gitlab-terraform validate
+  dependencies:
+    - init
 
 plan:
   stage: plan
@@ -38,6 +47,8 @@ plan:
       - ${TF_ROOT}/plan.cache
     reports:
       terraform: ${TF_ROOT}/plan.json
+  dependencies:
+    - init
 
 # Separate apply job for manual launching Terraform as it can be destructive
 # action.
@@ -46,8 +57,9 @@ apply:
   environment:
     name: production
   script:
-    - gitlab-terraform apply ${TF_ROOT}/plan.cache
+    - gitlab-terraform apply
   dependencies:
+    - init
     - plan
   when: manual
 
@@ -57,4 +69,6 @@ destroy:
     name: production
   script:
     - gitlab-terraform destroy
+  dependencies:
+    - init
   when: manual
