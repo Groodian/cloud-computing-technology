@@ -63,6 +63,10 @@ apply:
     - ansible-playbook --version
     - chmod -R 700 .
     - gitlab-terraform apply
+  artifacts:
+    name: ssh-key
+    paths:
+      - ${TF_ROOT}/.ssh/google_compute_engine
   dependencies:
     - init
     - plan
