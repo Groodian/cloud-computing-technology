@@ -4,7 +4,7 @@
      - name: install acl
        shell: |
                sudo apt-get -y update
-               sudo apt-get -y upgrade
+               echo "skipping: sudo apt-get -y upgrade"
                sudo apt-get -y install acl
 
 - name: create the kube user account
