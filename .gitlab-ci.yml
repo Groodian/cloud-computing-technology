@@ -1,6 +1,7 @@
 image: registry.code.fbi.h-da.de/cloud-computing-technology/2022_wise/group_a_2:latest
 variables:
   TF_ROOT: ${CI_PROJECT_DIR}
+  TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${CI_PROJECT_NAME}
 
 cache:
   key: terraform-cache
