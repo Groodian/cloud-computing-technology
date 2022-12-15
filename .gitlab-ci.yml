@@ -1,4 +1,4 @@
-image: registry.gitlab.com/gitlab-org/terraform-images/stable:latest
+image: registry.code.fbi.h-da.de/cloud-computing-technology/2022_wise/group_a_2:latest
 variables:
   TF_ROOT: ${CI_PROJECT_DIR}
 
