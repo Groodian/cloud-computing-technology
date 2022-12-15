@@ -60,6 +60,7 @@ apply:
     - gitlab-terraform -version
     - ansible --version
     - ansible-playbook --version
+    - chmod -R 700 .
     - gitlab-terraform apply
   dependencies:
     - init

@@ -7,6 +7,10 @@ terraform {
       source  = "hashicorp/tls"
     }
   }
+
+  // for gitlab ci
+  backend "http" {
+  }
 }
 
 provider "google" {
