@@ -25,7 +25,8 @@ override.tf.json
 #
 # !example_override.tf
 
-infrastructure/.terraform.lock.hcl
+.terraform.lock.hcl
+
 infrastructure/.ssh/*
 infrastructure/plan
 infrastructure/plan.json

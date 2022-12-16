@@ -1,17 +1,17 @@
 image: registry.code.fbi.h-da.de/cloud-computing-technology/2022_wise/group_a_2:latest
 variables:
-  TF_ROOT: ${CI_PROJECT_DIR}
+  TF_ROOT_INFRASTRUCTURE: ${CI_PROJECT_DIR}/infrastructure
+  TF_ROOT_DEPLOYS: ${CI_PROJECT_DIR}/kubernetes-deploys
   TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${CI_PROJECT_NAME}
 
 cache:
   key: terraform-cache
   paths:
-    - ${TF_ROOT}/.terraform
-    - ${TF_ROOT}/.terraform.lock.hcl
+    - ${TF_ROOT_INFRASTRUCTURE}/.terraform
+    - ${TF_ROOT_INFRASTRUCTURE}/.terraform.lock.hcl
+    - ${TF_ROOT_DEPLOYS}/.terraform
+    - ${TF_ROOT_DEPLOYS}/.terraform.lock.hcl
   when: always
-
-before_script:
-  - cd ${TF_ROOT}
 
 stages:
   - init
@@ -23,16 +23,18 @@ stages:
 init:
   stage: init
   script:
+    - cd ${TF_ROOT_INFRASTRUCTURE}
     - gitlab-terraform init
   artifacts:
     name: init
     paths:
-    - ${TF_ROOT}/.terraform
-    - ${TF_ROOT}/.terraform.lock.hcl
+    - ${TF_ROOT_INFRASTRUCTURE}/.terraform
+    - ${TF_ROOT_INFRASTRUCTURE}/.terraform.lock.hcl
 
 validate:
   stage: validate
   script:
+    - cd ${TF_ROOT_INFRASTRUCTURE}
     - gitlab-terraform validate
   dependencies:
     - init
@@ -40,14 +42,16 @@ validate:
 plan:
   stage: plan
   script:
+    - cd ${TF_ROOT_INFRASTRUCTURE}
     - gitlab-terraform plan
     - gitlab-terraform plan-json
   artifacts:
     name: plan
     paths:
-      - ${TF_ROOT}/plan.cache
+      - ${TF_ROOT_INFRASTRUCTURE}/plan.cache
     reports:
-      terraform: ${TF_ROOT}/plan.json
+      terraform: 
+        - ${TF_ROOT_INFRASTRUCTURE}/plan.json
   dependencies:
     - init
 
@@ -62,11 +66,12 @@ apply:
     - ansible --version
     - ansible-playbook --version
     - chmod -R 700 .
+    - cd ${TF_ROOT_INFRASTRUCTURE}
     - gitlab-terraform apply
   artifacts:
     name: ssh-key
     paths:
-      - ${TF_ROOT}/.ssh/google_compute_engine
+      - ${TF_ROOT_INFRASTRUCTURE}/.ssh/google_compute_engine
   dependencies:
     - init
     - plan
@@ -77,6 +82,7 @@ destroy:
   environment:
     name: production
   script:
+    - cd ${TF_ROOT_INFRASTRUCTURE}
     - gitlab-terraform destroy
   dependencies:
     - init
