@@ -25,8 +25,12 @@ override.tf.json
 #
 # !example_override.tf
 
-.terraform.lock.hcl
-.ssh/*
-ansible/inventory
-plan
-plan.json
+infrastructure/.terraform.lock.hcl
+infrastructure/.ssh/*
+infrastructure/plan
+infrastructure/plan.json
+
+kubernetes-install/inventory
+
+kubernetes-deploy/plan
+kubernetes-deploy/plan.json

@@ -177,18 +177,18 @@ resource "google_compute_instance" "kubernetes_worker" {
 }
 
 resource "local_file" "ansible_inventory" {
-  content = templatefile("ansible/inventory.tmpl", {
+  content = templatefile("../kubernetes-install/inventory.tmpl", {
     user                        = var.user,
-    key_path                    = "../.ssh/google_compute_engine",
+    key_path                    = "../infrastructure/.ssh/google_compute_engine",
     kubernetes_master_address   = google_compute_instance.kubernetes_master.network_interface.0.access_config.0.nat_ip,
     kubernetes_master_name      = google_compute_instance.kubernetes_master.name,
     kubernetes_workers_address  = google_compute_instance.kubernetes_worker.*.network_interface.0.access_config.0.nat_ip,
     kubernetes_workers_name     = google_compute_instance.kubernetes_worker.*.name,
   })
-  filename = "ansible/inventory"
+  filename = "../kubernetes-install/inventory"
 
   provisioner "local-exec" {
-    working_dir = "ansible/"
+    working_dir = "../kubernetes-install/"
     command     = "ansible-playbook main.yml"
   }
 }
