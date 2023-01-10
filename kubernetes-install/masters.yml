@@ -55,4 +55,4 @@
       shell: |
                helm install prometheus prometheus-community/prometheus
                helm install grafana grafana/grafana
-               kubectl expose service grafana --type=NodePort --target-port=3000 --name=grafana-ext
+               kubectl expose service grafana --type=NodePort --target-port=30000 --name=grafana-ext
