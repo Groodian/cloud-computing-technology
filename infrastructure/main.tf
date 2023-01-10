@@ -91,7 +91,7 @@ resource "google_compute_firewall" "allow_grafana" {
 
   allow {
     protocol = "tcp"
-    ports    = ["30000"]
+    ports    = ["30000-32700"]
   }
 }
 
