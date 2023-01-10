@@ -35,3 +35,4 @@ kubernetes-install/inventory
 
 kubernetes-deploy/plan
 kubernetes-deploy/plan.json
+stuff.txt
