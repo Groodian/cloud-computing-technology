@@ -83,6 +83,18 @@ resource "google_compute_firewall" "allow_http" {
   }
 }
 
+resource "google_compute_firewall" "allow_grafana" {
+  name          = "allow-grafana"
+  network       = google_compute_network.kubernetes_network.name
+  target_tags   = ["allow-grafana"] // this targets our tagged VM
+  source_ranges = ["0.0.0.0/0"]
+
+  allow {
+    protocol = "tcp"
+    ports    = ["3000"]
+  }
+}
+
 resource "google_compute_firewall" "allow_kubernetes_api" {
   name          = "allow-kubernetes-api"
   network       = google_compute_network.kubernetes_network.name
@@ -100,7 +112,7 @@ data "google_client_openid_userinfo" "me" {}
 resource "google_compute_instance" "kubernetes_master" {
   name         = "kubernetes-master"
   machine_type = "e2-medium"
-  tags         = ["allow-ssh","allow-http","allow-kubernetes-api"] // this receives the firewall rule
+  tags         = ["allow-ssh","allow-http","allow-kubernetes-api","allow-grafana"] // this receives the firewall rule
 
   metadata = {
     ssh-keys = "${var.user}:${tls_private_key.ssh.public_key_openssh}"
