@@ -79,7 +79,7 @@ resource "google_compute_firewall" "allow_http" {
 
   allow {
     protocol = "tcp"
-    ports    = ["80"]
+    ports    = ["80","443"]
   }
 }
 
@@ -107,12 +107,24 @@ resource "google_compute_firewall" "allow_kubernetes_api" {
   }
 }
 
+resource "google_compute_firewall" "allow_kubernetes" {
+  name          = "allow-flannel"
+  network       = google_compute_network.kubernetes_network.name
+  target_tags   = ["allow-flannel"] // this targets our tagged VM
+  source_ranges = ["0.0.0.0/0"]
+
+  allow {
+    protocol = "udp"
+    ports    = ["8252","8472"]
+  }
+}
+
 data "google_client_openid_userinfo" "me" {}
 
 resource "google_compute_instance" "kubernetes_master" {
   name         = "kubernetes-master"
   machine_type = "e2-medium"
-  tags         = ["allow-ssh","allow-http","allow-kubernetes-api","allow-grafana"] // this receives the firewall rule
+  tags         = ["allow-ssh","allow-http","allow-kubernetes-api","allow-flannel","allow-grafana"] // this receives the firewall rule
 
   metadata = {
     ssh-keys = "${var.user}:${tls_private_key.ssh.public_key_openssh}"
@@ -152,7 +164,7 @@ resource "google_compute_instance" "kubernetes_master" {
 resource "google_compute_instance" "kubernetes_worker" {
   name         = "kubernetes-worker-${count.index}"
   machine_type = "e2-medium"
-  tags         = ["allow-ssh","allow-kubernetes-api"] // this receives the firewall rule
+  tags         = ["allow-ssh","allow-http","allow-flannel","allow-kubernetes-api"] // this receives the firewall rule
   count        = var.worker_count
 
   metadata = {
