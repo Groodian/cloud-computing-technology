@@ -41,13 +41,13 @@
               sudo apt-get update
               sudo apt-get install helm
     
-    - name: Add Repos
-      become: yes
-      become_user: kube
-      shell: |
-               helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-               helm repo add grafana https://grafana.github.io/helm-charts
-               helm repo update
+#    - name: Add Repos
+#      become: yes
+#      become_user: kube
+#      shell: |
+#               helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+#               helm repo add grafana https://grafana.github.io/helm-charts
+#               helm repo update
 
 #    - name: install prometheus and grafana
 #      become: yes
