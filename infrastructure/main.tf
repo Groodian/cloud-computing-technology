@@ -217,8 +217,8 @@ resource "local_file" "ansible_inventory" {
   }
 }
 
-resource "local_file" "ansible_inventory" {
-  content = templatefile("../kubernetes-deploy/prometheus/inventory.tmpl", {
+resource "local_file" "ansible_inventory_deploy" {
+  content = templatefile("../kubernetes-deploys/prometheus-deploy/inventory.tmpl", {
     user                        = var.user,
     key_path                    = "../infrastructure/.ssh/google_compute_engine",
     kubernetes_master_address   = google_compute_instance.kubernetes_master.network_interface.0.access_config.0.nat_ip,
@@ -226,10 +226,10 @@ resource "local_file" "ansible_inventory" {
     kubernetes_workers_address  = google_compute_instance.kubernetes_worker.*.network_interface.0.access_config.0.nat_ip,
     kubernetes_workers_name     = google_compute_instance.kubernetes_worker.*.name,
   })
-  filename = "../kubernetes-deploy/prometheus/inventory"
+  filename = "../kubernetes-deploys/prometheus-deploy/inventory"
 
   provisioner "local-exec" {
-    working_dir = "../kubernetes-deploy/prometheus/"
+    working_dir = "../kubernetes-deploys/prometheus-deploy/"
     command     = "ansible-playbook main.yml"
   }
 }
