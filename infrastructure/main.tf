@@ -103,7 +103,7 @@ resource "google_compute_firewall" "allow_kubernetes_api" {
 
   allow {
     protocol = "tcp"
-    ports    = ["6443","2379-2380","10250","10259","10257"]
+    ports    = ["6443","2379-2380","10250","10259","10257","30000-32767"]
   }
 }
 
