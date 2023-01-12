@@ -103,7 +103,7 @@ resource "google_compute_firewall" "allow_kubernetes_api" {
 
   allow {
     protocol = "tcp"
-    ports    = ["6443"]
+    ports    = ["6443","2379-2380","10250","10259","10257","30000-32767"]
   }
 }
 
@@ -152,7 +152,7 @@ resource "google_compute_instance" "kubernetes_master" {
 resource "google_compute_instance" "kubernetes_worker" {
   name         = "kubernetes-worker-${count.index}"
   machine_type = "e2-medium"
-  tags         = ["allow-ssh"] // this receives the firewall rule
+  tags         = ["allow-ssh","allow-kubernetes-api"] // this receives the firewall rule
   count        = var.worker_count
 
   metadata = {
