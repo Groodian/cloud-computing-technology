@@ -98,7 +98,7 @@ resource "google_compute_firewall" "allow_grafana" {
 resource "google_compute_firewall" "allow_kubernetes_api" {
   name          = "allow-kubernetes-api"
   network       = google_compute_network.kubernetes_network.name
-  target_tags   = ["allow-http"] // this targets our tagged VM
+  target_tags   = ["allow-kubernetes-api"] // this targets our tagged VM
   source_ranges = ["0.0.0.0/0"]
 
   allow {
