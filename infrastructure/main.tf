@@ -217,7 +217,7 @@ resource "local_file" "ansible_inventory" {
   }
 }
 
-resource "local_file" "ansible_inventory_deploy" {
+resource "local_file" "ansible_inventory" {
   content = templatefile("../kubernetes-deploy/prometheus/inventory.tmpl", {
     user                        = var.user,
     key_path                    = "../infrastructure/.ssh/google_compute_engine",
