@@ -107,7 +107,7 @@ resource "google_compute_firewall" "allow_kubernetes_api" {
   }
 }
 
-resource "google_compute_firewall" "allow_kubernetes" {
+resource "google_compute_firewall" "allow_flannel" {
   name          = "allow-flannel"
   network       = google_compute_network.kubernetes_network.name
   target_tags   = ["allow-flannel"] // this targets our tagged VM
@@ -164,7 +164,7 @@ resource "google_compute_instance" "kubernetes_master" {
 resource "google_compute_instance" "kubernetes_worker" {
   name         = "kubernetes-worker-${count.index}"
   machine_type = "e2-medium"
-  tags         = ["allow-ssh","allow-http","allow-flannel","allow-kubernetes-api"] // this receives the firewall rule
+  tags         = ["allow-ssh","allow-http","allow-kubernetes-api","allow-flannel","allow-grafana"] // this receives the firewall rule
   count        = var.worker_count
 
   metadata = {
