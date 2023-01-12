@@ -19,7 +19,6 @@
       become: yes
       become_user: kube
       shell: |
-#              kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
               kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
               kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml
               kubectl taint nodes --all node-role.kubernetes.io/master-
