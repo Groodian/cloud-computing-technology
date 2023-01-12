@@ -99,7 +99,7 @@ resource "google_compute_firewall" "allow_kubernetes_api" {
   name          = "allow-kubernetes-api"
   network       = google_compute_network.kubernetes_network.name
   target_tags   = ["allow-kubernetes-api"] // this targets our tagged VM
-  source_ranges = ["10.156.0.0/8"]
+  source_ranges = ["0.0.0.0/0"]
 
   allow {
     protocol = "tcp"
@@ -111,7 +111,7 @@ resource "google_compute_firewall" "allow_flannel" {
   name          = "allow-flannel"
   network       = google_compute_network.kubernetes_network.name
   target_tags   = ["allow-flannel"] // this targets our tagged VM
-  source_ranges = ["10.156.0.0/8"]
+  source_ranges = ["0.0.0.0/0"]
 
   allow {
     protocol = "udp"
