@@ -18,3 +18,7 @@
 
 - name: let the workers join the cluster
   ansible.builtin.import_playbook: join-workers.yml
+
+- name: install prometheus
+  ansible.builtin.import_playbook: install-prometheus.yml
+
