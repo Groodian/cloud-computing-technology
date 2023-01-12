@@ -91,7 +91,7 @@ resource "google_compute_firewall" "allow_grafana" {
 
   allow {
     protocol = "tcp"
-    ports    = ["9090","30000-32700"]
+    ports    = ["9090","30000-32767"]
   }
 }
 
@@ -99,11 +99,11 @@ resource "google_compute_firewall" "allow_kubernetes_api" {
   name          = "allow-kubernetes-api"
   network       = google_compute_network.kubernetes_network.name
   target_tags   = ["allow-kubernetes-api"] // this targets our tagged VM
-  source_ranges = ["0.0.0.0/0"]
+  source_ranges = ["10.156.0.0/8"]
 
   allow {
     protocol = "tcp"
-    ports    = ["6443","2379-2380","10250","10259","10257","30000-32767"]
+    ports    = ["6443","2379-2380","10250","10259","10257"]
   }
 }
 
@@ -111,7 +111,7 @@ resource "google_compute_firewall" "allow_flannel" {
   name          = "allow-flannel"
   network       = google_compute_network.kubernetes_network.name
   target_tags   = ["allow-flannel"] // this targets our tagged VM
-  source_ranges = ["0.0.0.0/0"]
+  source_ranges = ["10.156.0.0/8"]
 
   allow {
     protocol = "udp"
@@ -213,6 +213,23 @@ resource "local_file" "ansible_inventory" {
 
   provisioner "local-exec" {
     working_dir = "../kubernetes-install/"
+    command     = "ansible-playbook main.yml"
+  }
+}
+
+resource "local_file" "ansible_inventory_deploy" {
+  content = templatefile("../kubernetes-deploy/prometheus/inventory.tmpl", {
+    user                        = var.user,
+    key_path                    = "../infrastructure/.ssh/google_compute_engine",
+    kubernetes_master_address   = google_compute_instance.kubernetes_master.network_interface.0.access_config.0.nat_ip,
+    kubernetes_master_name      = google_compute_instance.kubernetes_master.name,
+    kubernetes_workers_address  = google_compute_instance.kubernetes_worker.*.network_interface.0.access_config.0.nat_ip,
+    kubernetes_workers_name     = google_compute_instance.kubernetes_worker.*.name,
+  })
+  filename = "../kubernetes-deploy/prometheus/inventory"
+
+  provisioner "local-exec" {
+    working_dir = "../kubernetes-deploy/prometheus/"
     command     = "ansible-playbook main.yml"
   }
 }
