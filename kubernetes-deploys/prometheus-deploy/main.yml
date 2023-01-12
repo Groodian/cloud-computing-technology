@@ -1,8 +1,9 @@
 - hosts: 'masters'
   become: yes
-  become_user: kube
   tasks:
      - name: deploy Prometheus and Grafana
+       become: yes
+       become_user: kube
        shell: |
                helm repo add stable https://charts.helm.sh/stable
                helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
