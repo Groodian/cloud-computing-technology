@@ -1,0 +1,20 @@
+ToDos bis 27.01.2023
+
+- Prometheus / Grafana User Daten ändern und / oder PWs ändern 
+    - Passwort wird gesetzt, noch über gitlab Key/Value Store setzen
+
+- Kubernetes vergibt Ports random und nicht die gesetzt werden
+    Tom / Flo
+
+- Ports nur im internen Netzwerk ansprechbar
+    - Kubernetes absichern
+    - Flo
+
+- Ansible Skripte schick machen
+    - Tom / Flo
+    
+- Application Deployment 
+    - Webserver
+    - Auslastungsskript 
+    - Wenn Lust alle möglichen verschiedenen Applikationen
+        - Mastodon Server ?

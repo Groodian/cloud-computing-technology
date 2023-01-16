@@ -59,6 +59,54 @@ resource "google_compute_address" "static_ip_kubernetes_master" {
   name = "kubernetes-master"
 }
 
+
+resource "google_compute_firewall" "open_tcp_ports" {
+  name          = "open-tcp-ports"
+  network       = google_compute_network.kubernetes_network.name
+  target_tags   = ["open-tcp-ports"] // this targets our tagged VM
+  source_ranges = ["0.0.0.0/0"]
+
+  allow {
+    protocol = "tcp"
+    ports    = [
+      "22", // for SSH
+      "80","443", // For Webserver Purposes
+      "6443", // Kubernetes-API
+      "9090","30000-32767" // For Grafana and Playground 
+    ]
+  }
+}
+
+resource "google_compute_firewall" "restricted_udp_ports" {
+  name          = "restricted-udp-ports"
+  network       = google_compute_network.kubernetes_network.name
+  target_tags   = ["restricted-udp-ports"] // this targets our tagged VM
+  source_ranges = ["10.0.0.0/16"]
+
+  allow {
+    protocol = "udp"
+    ports    = [
+      "8252","8472" // Ports for Flannel
+    ]
+  }
+}
+
+resource "google_compute_firewall" "restricted_tcp_ports" {
+  name          = "restricted-tcp-ports"
+  network       = google_compute_network.kubernetes_network.name
+  target_tags   = ["restricted-tcp-ports"] // this targets our tagged VM
+  source_ranges = ["10.0.0.0/16"]
+
+  allow {
+    protocol = "tcp"
+    ports    = [
+      "2379-2380","10250","10259","10257" // Internal for Kubernetes
+    ]
+  }
+}
+
+
+
 resource "google_compute_firewall" "allow_ssh" {
   name          = "allow-ssh"
   network       = google_compute_network.kubernetes_network.name
@@ -124,7 +172,7 @@ data "google_client_openid_userinfo" "me" {}
 resource "google_compute_instance" "kubernetes_master" {
   name         = "kubernetes-master"
   machine_type = "e2-medium"
-  tags         = ["allow-ssh","allow-http","allow-kubernetes-api","allow-flannel","allow-grafana"] // this receives the firewall rule
+  tags         = ["open-tcp-ports","restricted-tcp-ports","restricted-udp-ports"] // this receives the firewall rule
 
   metadata = {
     ssh-keys = "${var.user}:${tls_private_key.ssh.public_key_openssh}"
@@ -164,7 +212,7 @@ resource "google_compute_instance" "kubernetes_master" {
 resource "google_compute_instance" "kubernetes_worker" {
   name         = "kubernetes-worker-${count.index}"
   machine_type = "e2-medium"
-  tags         = ["allow-ssh","allow-http","allow-kubernetes-api","allow-flannel","allow-grafana"] // this receives the firewall rule
+  tags         = ["open-tcp-ports","restricted-tcp-ports","restricted-udp-ports"] // this receives the firewall rule
   count        = var.worker_count
 
   metadata = {
