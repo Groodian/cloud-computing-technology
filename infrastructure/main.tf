@@ -70,7 +70,7 @@ resource "google_compute_firewall" "open_tcp_ports" {
     protocol = "tcp"
     ports    = [
       "22", // for SSH
-      "80","443", // For Webserver Purposes
+      "80","443", // For Webserver
       "6443", // Kubernetes-API
       "9090","30000-32767" // For Grafana and Playground 
     ]
@@ -99,9 +99,7 @@ resource "google_compute_firewall" "restricted_tcp_ports" {
 
   allow {
     protocol = "tcp"
-    ports    = [
-      "2379-2380","10250","10259","10257" // Internal for Kubernetes
-    ]
+    ports    = ["22"]
   }
 }
 
@@ -172,7 +170,7 @@ data "google_client_openid_userinfo" "me" {}
 resource "google_compute_instance" "kubernetes_master" {
   name         = "kubernetes-master"
   machine_type = "e2-medium"
-  tags         = ["open-tcp-ports","restricted-tcp-ports","restricted-udp-ports"] // this receives the firewall rule
+  tags         = ["allow-ssh","allow-http","allow-kubernetes-api","allow-flannel","allow-grafana"] // this receives the firewall rule
 
   metadata = {
     ssh-keys = "${var.user}:${tls_private_key.ssh.public_key_openssh}"
@@ -212,7 +210,7 @@ resource "google_compute_instance" "kubernetes_master" {
 resource "google_compute_instance" "kubernetes_worker" {
   name         = "kubernetes-worker-${count.index}"
   machine_type = "e2-medium"
-  tags         = ["open-tcp-ports","restricted-tcp-ports","restricted-udp-ports"] // this receives the firewall rule
+  tags         = ["allow-ssh","allow-http","allow-kubernetes-api","allow-flannel","allow-grafana"] // this receives the firewall rule
   count        = var.worker_count
 
   metadata = {
