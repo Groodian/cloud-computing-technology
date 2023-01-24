@@ -1,0 +1,5 @@
+- name: install helm
+  ansible.builtin.import_playbook: install-helm.yml
+
+- name: install prometheus
+  ansible.builtin.import_playbook: install-prometheus.yml

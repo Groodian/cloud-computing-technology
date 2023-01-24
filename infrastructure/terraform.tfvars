@@ -1,5 +1,5 @@
-project          = "projectcloudcomputing2022"
-credentials_file = "projectcloudcomputing2022-d374d32f012b.json"
-user             = "tomflo" # this should match the username set by the OS Login
-email            = "tomflo@projectcloudcomputing2022.iam.gserviceaccount.com"
+project          = "test-project-hda"
+credentials_file = "test-project-hda-67094c6a205c.json"
+cluster_user     = "cluster"
+bastion_user     = "bastion"
 worker_count     = 3

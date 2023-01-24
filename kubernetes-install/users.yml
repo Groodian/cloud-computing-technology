@@ -14,4 +14,4 @@
     - name: set up authorized keys for the kube user
       authorized_key: user=kube key="{{item}}"
       with_file:
-        - ../infrastructure/.ssh/google_compute_engine.pub
+        - ../infrastructure/.ssh/cluster.pub

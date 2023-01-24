@@ -1,0 +1,21 @@
+[masters]
+${kubernetes_master_name} ansible_host=${kubernetes_master_address}
+
+[workers]
+%{ for kubernetes_worker_name_index, kubernetes_worker_name in kubernetes_workers_name ~}
+%{ for kubernetes_worker_address_index, kubernetes_worker_address in kubernetes_workers_address ~}
+%{ if kubernetes_worker_name_index == kubernetes_worker_address_index ~}
+${kubernetes_worker_name} ansible_host=${kubernetes_worker_address}
+%{ endif ~}
+%{ endfor ~}
+%{ endfor ~}
+
+[masters:vars]
+ansible_user=${cluster_user}
+ansible_ssh_private_key_file=${cluster_key_path}
+ansible_ssh_common_args='-o ProxyCommand="ssh -o StrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -o IdentityFile=${bastion_key_path} -W %h:%p ${bastion_user}@${bastion_address}"'
+
+[workers:vars]
+ansible_user=${cluster_user}
+ansible_ssh_private_key_file=${cluster_key_path}
+ansible_ssh_common_args='-o ProxyCommand="ssh -o StrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -o IdentityFile=${bastion_key_path} -W %h:%p ${bastion_user}@${bastion_address}"'

@@ -10,11 +10,11 @@ variable "zone" {
   default = "europe-west3-c"
 }
 
-variable "user" {
+variable "cluster_user" {
   type = string
 }
 
-variable "email" {
+variable "bastion_user" {
   type = string
 }
 
