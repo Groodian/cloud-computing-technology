@@ -1,5 +1,8 @@
 - name: install helm
   ansible.builtin.import_playbook: install-helm.yml
 
+- name: install ingress controller
+  ansible.builtin.import_playbook: ingress-controller.yml
+  
 - name: install prometheus
-  ansible.builtin.import_playbook: install-prometheus.yml
+  ansible.builtin.import_playbook: prometheus.yml

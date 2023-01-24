@@ -4,9 +4,8 @@
       become: yes
       become_user: kube
       shell: |
-              helm repo add stable https://charts.helm.sh/stable
               helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
               helm repo update
               helm install stable prometheus-community/kube-prometheus-stack --set grafana.adminPassword="tfcct2022"
-              kubectl patch svc stable-kube-prometheus-sta-prometheus -p '{"spec": {"type": "NodePort"}}'
-              kubectl patch svc stable-grafana -p '{"spec": {"type": "NodePort"}}'
+              kubectl patch service stable-grafana --patch='{"spec": {"type": "NodePort"}}'
+              kubectl patch service stable-grafana --type='json' --patch='[{"op": "replace", "path": "/spec/ports/0/nodePort", "value":31000}]'

@@ -22,15 +22,15 @@ resource "google_compute_firewall" "allow_ssh_cluster" {
   }
 }
 
-resource "google_compute_firewall" "allow_http" {
-  name          = "allow-http"
+resource "google_compute_firewall" "allow_kubernetes" {
+  name          = "allow-kubernetes"
   network       = google_compute_network.kubernetes_network.name
-  target_tags   = ["allow-http"] // this targets our tagged VM
+  target_tags   = ["allow-kubernetes"] // this targets our tagged VM
   source_ranges = ["0.0.0.0/0"]
 
   allow {
     protocol = "tcp"
-    ports    = ["80", "443"]
+    ports    = ["6443"]
   }
 }
 
@@ -42,14 +42,14 @@ resource "google_compute_firewall" "allow_grafana" {
 
   allow {
     protocol = "tcp"
-    ports    = ["9090", "30000-32767"]
+    ports    = ["31000"]
   }
 }
 
-resource "google_compute_firewall" "allow_kubernetes_api" {
-  name          = "allow-kubernetes-api"
+resource "google_compute_firewall" "allow_all_kubernetes" {
+  name          = "allow-all-kubernetes"
   network       = google_compute_network.kubernetes_network.name
-  target_tags   = ["allow-kubernetes-api"] // this targets our tagged VM
+  target_tags   = ["allow-all-kubernetes"] // this targets our tagged VM
   source_ranges = ["10.0.0.0/8"]
 
   allow {

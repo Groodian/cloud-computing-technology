@@ -41,7 +41,7 @@ resource "google_compute_instance" "bastion" {
 resource "google_compute_instance" "kubernetes_master" {
   name         = "kubernetes-master"
   machine_type = "e2-medium"
-  tags         = ["allow-ssh-cluster", "allow-http", "allow-kubernetes-api", "allow-flannel", "allow-grafana"] // this receives the firewall rule
+  tags         = ["allow-ssh-cluster", "allow-kubernetes", "allow-grafana", "allow-all-kubernetes", "allow-flannel"] // this receives the firewall rule
 
   metadata = {
     ssh-keys = "${var.cluster_user}:${tls_private_key.ssh_cluster.public_key_openssh}"
@@ -80,7 +80,7 @@ resource "google_compute_instance" "kubernetes_master" {
 resource "google_compute_instance" "kubernetes_worker" {
   name         = "kubernetes-worker-${count.index}"
   machine_type = "e2-medium"
-  tags         = ["allow-ssh-cluster", "allow-http", "allow-kubernetes-api", "allow-flannel", "allow-grafana"] // this receives the firewall rule
+  tags         = ["allow-ssh-cluster", "allow-kubernetes", "allow-grafana", "allow-all-kubernetes", "allow-flannel"] // this receives the firewall rule
   count        = var.worker_count
 
   metadata = {

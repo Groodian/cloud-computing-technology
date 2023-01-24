@@ -8,7 +8,7 @@ ToDos bis 27.01.2023
 
 - Ports nur im internen Netzwerk ansprechbar
     - Kubernetes absichern
-    - Flo
+    - Tom
 
 - Ansible Skripte schick machen
     - Tom / Flo
@@ -18,3 +18,10 @@ ToDos bis 27.01.2023
     - Auslastungsskript 
     - Wenn Lust alle möglichen verschiedenen Applikationen
         - Mastodon Server ?
+
+- Bastion Host
+    - Tom
+
+- Ingress Controller
+    - NGINX Ingress Controller
+    - Tom

@@ -74,3 +74,8 @@ resource "google_compute_network" "kubernetes_network" {
 resource "google_compute_address" "static_ip_bastion" {
   name = "kubernetes-master"
 }
+
+resource "google_compute_address" "static_ip_load_balancer" {
+  name = "load-balancer"
+}
+
