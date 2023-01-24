@@ -31,7 +31,7 @@ infrastructure/.ssh/*
 infrastructure/plan
 infrastructure/plan.json
 
-kubernetes-install/inventory
+ansible-inventory/inventory
 
 kubernetes-deploy/plan
 kubernetes-deploy/plan.json
