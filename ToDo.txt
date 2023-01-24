@@ -4,7 +4,7 @@ ToDos bis 27.01.2023
     - Passwort wird gesetzt, noch über gitlab Key/Value Store setzen
 
 - Kubernetes vergibt Ports random und nicht die gesetzt werden
-    Tom / Flo
+    - Tom
 
 - Ports nur im internen Netzwerk ansprechbar
     - Kubernetes absichern
