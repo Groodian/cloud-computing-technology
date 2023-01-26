@@ -42,7 +42,7 @@ resource "google_compute_forwarding_rule" "load_balancer_kubernetes_masters" {
   ip_protocol           = "TCP"
   network_tier          = "PREMIUM"
   subnetwork            = google_compute_subnetwork.kubernetes_subnetwork.self_link
-  backend_service       = google_compute_backend_service.kubernetes_masters_backend_service.self_link
+  backend_service       = google_compute_region_backend_service.kubernetes_masters_backend_service.self_link
   region                = var.region
 }
 
@@ -52,7 +52,7 @@ resource "google_compute_region_backend_service" "kubernetes_masters_backend_ser
   load_balancing_scheme = "INTERNAL_SELF_MANAGED"
   protocol              = "TCP"
   session_affinity      = "NONE"
-  health_checks         = [google_compute_health_check.kubernetes_masters_health_check.self_link]
+  health_checks         = [google_compute_region_health_check.kubernetes_masters_health_check.self_link]
 
   backend {
     group = google_compute_instance_group.kubernetes_masters_instance_group.self_link
@@ -77,4 +77,3 @@ resource "google_compute_region_health_check" "kubernetes_masters_health_check" 
     port = 6443
   }
 }
-
