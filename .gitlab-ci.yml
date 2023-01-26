@@ -45,6 +45,7 @@ plan:
     reports:
       terraform: 
         - ${TF_ROOT_INFRASTRUCTURE}/plan.json
+    expire_in: 7 days
   dependencies:
     - init
 
@@ -66,6 +67,7 @@ apply:
     paths:
       - ${TF_ROOT_INFRASTRUCTURE}/.ssh/bastion
       - ${TF_ROOT_INFRASTRUCTURE}/.ssh/cluster
+    expire_in: 7 days
   dependencies:
     - init
     - plan
