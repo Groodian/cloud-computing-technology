@@ -28,8 +28,6 @@
               kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
 
     - name: Get the token for joining the nodes
-      become: true
-      become_user: kube
       ansible.builtin.shell: kubeadm token create --print-join-command
       register: kubernetes_join_command
 
@@ -38,8 +36,6 @@
       local_action: copy content="{{ kubernetes_join_command.stdout_lines[0] }}" dest="/tmp/kubernetes_join_command"
 
     - name: Get the certificate key for joining the master nodes
-      become: true
-      become_user: kube
       ansible.builtin.shell: kubeadm init phase upload-certs --upload-certs
       register: kubernetes_certificate_key
 
