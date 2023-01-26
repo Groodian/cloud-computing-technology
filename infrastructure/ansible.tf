@@ -10,7 +10,7 @@ resource "local_file" "ansible_inventory" {
     kubernetes_master_name     = google_compute_instance.kubernetes_master.name,
     kubernetes_workers_address = google_compute_instance.kubernetes_worker.*.network_interface.0.network_ip,
     kubernetes_workers_name    = google_compute_instance.kubernetes_worker.*.name,
-    grafana_port               = vars.grafana_port,
+    grafana_port               = var.grafana_port,
   })
   filename = "../ansible-inventory/inventory"
 
