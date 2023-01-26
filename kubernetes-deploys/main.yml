@@ -6,3 +6,7 @@
   
 - name: install prometheus
   ansible.builtin.import_playbook: prometheus.yml
+
+- name: install apache2
+  ansible.builtin.import_playbook: apache2.yml
+
