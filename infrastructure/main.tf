@@ -9,8 +9,8 @@ terraform {
   }
 
   // for gitlab ci
-  //backend "http" {
-  //}
+  backend "http" {
+  }
 }
 
 provider "google" {
