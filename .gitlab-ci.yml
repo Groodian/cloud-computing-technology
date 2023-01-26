@@ -71,7 +71,8 @@ apply:
   artifacts:
     name: ssh-key
     paths:
-      - ${TF_ROOT_INFRASTRUCTURE}/.ssh/google_compute_engine
+      - ${TF_ROOT_INFRASTRUCTURE}/.ssh/bastion
+      - ${TF_ROOT_INFRASTRUCTURE}/.ssh/cluster
   dependencies:
     - init
     - plan
