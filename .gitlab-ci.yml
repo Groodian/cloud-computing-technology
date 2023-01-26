@@ -1,7 +1,6 @@
 image: registry.code.fbi.h-da.de/cloud-computing-technology/2022_wise/group_a_2:latest
 variables:
   TF_ROOT_INFRASTRUCTURE: ${CI_PROJECT_DIR}/infrastructure
-  TF_ROOT_DEPLOYS: ${CI_PROJECT_DIR}/kubernetes-deploys
   TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/${CI_PROJECT_NAME}
 
 cache:
@@ -9,8 +8,6 @@ cache:
   paths:
     - ${TF_ROOT_INFRASTRUCTURE}/.terraform
     - ${TF_ROOT_INFRASTRUCTURE}/.terraform.lock.hcl
-    - ${TF_ROOT_DEPLOYS}/.terraform
-    - ${TF_ROOT_DEPLOYS}/.terraform.lock.hcl
   when: always
 
 stages:
@@ -25,11 +22,6 @@ init:
   script:
     - cd ${TF_ROOT_INFRASTRUCTURE}
     - gitlab-terraform init
-  artifacts:
-    name: init
-    paths:
-    - ${TF_ROOT_INFRASTRUCTURE}/.terraform
-    - ${TF_ROOT_INFRASTRUCTURE}/.terraform.lock.hcl
 
 validate:
   stage: validate
@@ -49,6 +41,7 @@ plan:
     name: plan
     paths:
       - ${TF_ROOT_INFRASTRUCTURE}/plan.cache
+      - ${TF_ROOT_INFRASTRUCTURE}/plan.json
     reports:
       terraform: 
         - ${TF_ROOT_INFRASTRUCTURE}/plan.json
