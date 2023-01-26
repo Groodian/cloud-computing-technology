@@ -1,9 +1,10 @@
 - hosts: masters
+
   tasks:
-    - name: install prometheus
-      become: yes
+    - name: Install prometheus
+      become: true
       become_user: kube
-      shell: |
+      ansible.builtin.shell: |
               helm repo add my-repo https://charts.bitnami.com/bitnami
               helm repo update
               helm install my-release my-repo/apache --set replicaCount=5

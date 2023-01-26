@@ -28,6 +28,6 @@ resource "google_compute_http_health_check" "kubernetes_target_pool_health_check
   check_interval_sec  = 1
   healthy_threshold   = 4
   unhealthy_threshold = 2
-  port                = 31000 # check if grafana is running
+  port                = grafana_port # check if grafana is running
   request_path        = "/login"
 }

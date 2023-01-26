@@ -25,3 +25,6 @@ ToDos bis 27.01.2023
 - Ingress Controller
     - NGINX Ingress Controller
     - Tom
+
+- Multiple Masters
+    - Tom

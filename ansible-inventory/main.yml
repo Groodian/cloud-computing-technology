@@ -1,5 +1,5 @@
-- name: install kubernetes
+- name: Install kubernetes
   ansible.builtin.import_playbook: ../kubernetes-install/main.yml
 
-- name: kubernetes deploys
+- name: Kubernetes deploys
   ansible.builtin.import_playbook: ../kubernetes-deploys/main.yml

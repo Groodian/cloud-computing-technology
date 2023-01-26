@@ -1,7 +1,8 @@
 - hosts: masters
+
   tasks:
-    - name: install ingress controller
-      become: yes
+    - name: Install ingress controller
+      become: true
       become_user: kube
-      shell: |
+      ansible.builtin.shell: |
               helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace

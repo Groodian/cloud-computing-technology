@@ -19,3 +19,6 @@ ansible_ssh_common_args='-o ProxyCommand="ssh -o StrictHostKeyChecking=no -oUser
 ansible_user=${cluster_user}
 ansible_ssh_private_key_file=${cluster_key_path}
 ansible_ssh_common_args='-o ProxyCommand="ssh -o StrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -o IdentityFile=${bastion_key_path} -W %h:%p ${bastion_user}@${bastion_address}"'
+
+[all:vars]
+grafana_port=${grafana_port}

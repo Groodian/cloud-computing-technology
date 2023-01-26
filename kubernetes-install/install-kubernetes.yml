@@ -1,50 +1,50 @@
 - hosts: "masters, workers"
-  become: yes
+  name: Install kubernetes
+  become: true
   become_method: sudo
   become_user: root
-  gather_facts: yes
+  gather_facts: true
   connection: ssh
 
   tasks:
-     - name: create containerd config file
-       file:
-         path: "/etc/modules-load.d/containerd.conf"
-         state: "touch"
+     - name: Create containerd config file
+       ansible.builtin.file:
+          path: "/etc/modules-load.d/containerd.conf"
+          state: "touch"
 
-     - name: add conf for containerd
-       blockinfile:
-         path: "/etc/modules-load.d/containerd.conf"
-         block: |
+     - name: Add conf for containerd
+       ansible.builtin.blockinfile:
+          path: "/etc/modules-load.d/containerd.conf"
+          block: |
                overlay
                br_netfilter
 
-     - name: modprobe
-       shell: |
+     - name: Modprobe
+       ansible.builtin.shell: |
                sudo modprobe overlay
                sudo modprobe br_netfilter
 
+     - name: Set system configurations for kubernetes networking
+       ansible.builtin.file:
+          path: "/etc/sysctl.d/99-kubernetes-cri.conf"
+          state: "touch"
 
-     - name: set system configurations for kubernetes networking
-       file:
-         path: "/etc/sysctl.d/99-kubernetes-cri.conf"
-         state: "touch"
-
-     - name: add conf for containerd
-       blockinfile:
-         path: "/etc/sysctl.d/99-kubernetes-cri.conf"
-         block: |
+     - name: Add conf for containerd
+       ansible.builtin.blockinfile:
+          path: "/etc/sysctl.d/99-kubernetes-cri.conf"
+          block: |
                 net.bridge.bridge-nf-call-iptables = 1
                 net.ipv4.ip_forward = 1
                 net.bridge.bridge-nf-call-ip6tables = 1
 
-     - name: apply new settings
-       command: sudo sysctl --system
+     - name: Apply new settings
+       ansible.builtin.command: sudo sysctl --system
 
-     - name: install containerd, runc and cni
-       shell: |
+     - name: Install containerd, runc and cni
+       ansible.builtin.shell: |
                curl -L -O https://github.com/containerd/containerd/releases/download/v1.6.12/containerd-1.6.12-linux-amd64.tar.gz
                sudo tar Cxzvf /usr/local containerd-1.6.12-linux-amd64.tar.gz
-               curl -O https://raw.githubusercontent.com/containerd/containerd/main/containerd.service             
+               curl -O https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
                sudo mkdir -p /usr/local/lib/systemd/system
                sudo cp containerd.service /usr/local/lib/systemd/system/containerd.service
                curl -L -O https://github.com/opencontainers/runc/releases/download/v1.1.4/runc.amd64
@@ -58,34 +58,33 @@
                sudo systemctl daemon-reload
                sudo systemctl enable --now containerd
 
-     - name: disable swap
-       shell: |
+     - name: Disable swap
+       ansible.builtin.shell: |
                sudo swapoff -a 
                sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
-     - name: install and configure dependencies
-       shell: |
+     - name: Install and configure dependencies
+       ansible.builtin.shell: |
                sudo apt-get update && sudo apt-get install -y apt-transport-https curl
                curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 
-     - name: create kubernetes repo file
-       file:
-         path: "/etc/apt/sources.list.d/kubernetes.list"
-         state: "touch"
+     - name: Create kubernetes repo file
+       ansible.builtin.file:
+          path: "/etc/apt/sources.list.d/kubernetes.list"
+          state: "touch"
 
-     - name: add kubernetes source
-       blockinfile:
-         path: "/etc/apt/sources.list.d/kubernetes.list"
-         block: |
+     - name: Add kubernetes source
+       ansible.builtin.blockinfile:
+          path: "/etc/apt/sources.list.d/kubernetes.list"
+          block: |
                deb https://apt.kubernetes.io/ kubernetes-xenial main
 
-     - name: install kubelet, kubeadm and kubectl
-       shell: |
+     - name: Install kubelet, kubeadm and kubectl
+       ansible.builtin.shell: |
                sudo apt-get update
                sudo apt-get install -y kubelet kubeadm kubectl
                sudo apt-mark hold kubelet kubeadm kubectl
 
-     - name: enable kubelet
-       shell: |
+     - name: Enable kubelet
+       ansible.builtin.shell: |
                sudo systemctl enable --now kubelet
-               

@@ -1,20 +1,22 @@
 - hosts: 'workers, masters'
-  become: yes
+  name: Install kubernetes
+  become: true
+
   tasks:
-     - name: install acl
-       shell: |
+     - name: Install acl
+       ansible.builtin.shell: |
                sudo apt-get -y update
                echo "skipping: sudo apt-get -y upgrade"
                sudo apt-get -y install acl
 
-- name: create the kube user account
+- name: Create the kube user account
   ansible.builtin.import_playbook: users.yml
 
-- name: install kubernetes
+- name: Install kubernetes
   ansible.builtin.import_playbook: install-kubernetes.yml
 
-- name: configure masters
+- name: Configure masters
   ansible.builtin.import_playbook: masters.yml
 
-- name: let the workers join the cluster
+- name: Let the workers join the cluster
   ansible.builtin.import_playbook: join-workers.yml

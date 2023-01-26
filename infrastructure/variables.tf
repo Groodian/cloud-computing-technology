@@ -18,6 +18,14 @@ variable "bastion_user" {
   type = string
 }
 
+variable "master_count" {
+  type = number
+}
+
 variable "worker_count" {
-  default = 2
+  type = number
+}
+
+variable "grafana_port" {
+  type = number
 }
