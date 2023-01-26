@@ -46,10 +46,12 @@ resource "google_compute_forwarding_rule" "load_balancer_kubernetes_masters" {
   region                = var.region
 }
 
-resource "google_compute_backend_service" "kubernetes_masters_backend_service" {
+resource "google_compute_region_backend_service" "kubernetes_masters_backend_service" {
   name                  = "kubernetes-masters-backend-service"
+  region                = var.region
   load_balancing_scheme = "INTERNAL_SELF_MANAGED"
   protocol              = "TCP"
+  session_affinity      = "NONE"
   health_checks         = [google_compute_health_check.kubernetes_masters_health_check.self_link]
 
   backend {
