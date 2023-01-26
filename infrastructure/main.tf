@@ -71,6 +71,13 @@ resource "google_compute_network" "kubernetes_network" {
   name = "kubernetes-network"
 }
 
+resource "google_compute_subnetwork" "kubernetes_subnetwork" {
+  name          = "kubernetes-subnetwork"
+  network       = google_compute_network.kubernetes_network.name
+  ip_cidr_range = "10.44.0.0/16"
+  region        = var.region
+}
+
 resource "google_compute_address" "static_ip_bastion" {
   name = "kubernetes-master"
 }
@@ -80,7 +87,9 @@ resource "google_compute_address" "static_ip_load_balancer_workers" {
 }
 
 resource "google_compute_address" "static_ip_load_balancer_masters" {
-  name = "load-balancer"
+  name         = "load-balancer"
   address_type = "INTERNAL"
+  purpose      = "GCE_ENDPOINT"
+  subnetwork   = google_compute_subnetwork.kubernetes_subnetwork.self_link
 }
 

@@ -42,6 +42,7 @@ resource "google_compute_forwarding_rule" "load_balancer_kubernetes_masters" {
   ip_address            = google_compute_address.static_ip_load_balancer_masters.self_link
   ip_protocol           = "TCP"
   network_tier          = "PREMIUM"
+  subnetwork            = google_compute_subnetwork.kubernetes_subnetwork.self_link
 }
 
 resource "google_compute_target_pool" "kubernetes_masters_target_pool" {

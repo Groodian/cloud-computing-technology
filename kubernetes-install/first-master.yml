@@ -7,7 +7,7 @@
       ansible.builtin.shell: |
         kubeadm init \
         --control-plane-endpoint={{ load_balancer_kubernetes_masters }}:6443 \
-        --pod-network-cidr=10.244.0.0/16 \
+        --pod-network-cidr=10.44.0.0/16 \
         --apiserver-cert-extra-sans={{ load_balancer_kubernetes_masters }}
       args:
         chdir: $HOME

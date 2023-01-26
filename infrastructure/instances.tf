@@ -15,7 +15,7 @@ resource "google_compute_instance" "bastion" {
   }
 
   network_interface {
-    network = google_compute_network.kubernetes_network.name
+    subnetwork = google_compute_subnetwork.kubernetes_subnetwork.name
 
     access_config {
       nat_ip = google_compute_address.static_ip_bastion.address
@@ -56,7 +56,7 @@ resource "google_compute_instance" "kubernetes_masters" {
   }
 
   network_interface {
-    network = google_compute_network.kubernetes_network.name
+    subnetwork = google_compute_subnetwork.kubernetes_subnetwork.name
   }
 
   provisioner "remote-exec" {
@@ -96,7 +96,7 @@ resource "google_compute_instance" "kubernetes_worker" {
   }
 
   network_interface {
-    network = google_compute_network.kubernetes_network.name
+    subnetwork = google_compute_subnetwork.kubernetes_subnetwork.name
   }
 
   provisioner "remote-exec" {
