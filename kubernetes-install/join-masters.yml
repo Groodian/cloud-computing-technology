@@ -2,6 +2,10 @@
   name: Let the masters join the cluster
 
   tasks:
+   - name: Wait until the file /tmp/kubernetes_masters_join_command is present
+     ansible.builtin.wait_for:
+      path: /tmp/kubernetes_masters_join_command
+
    - name: Copy join command from Ansiblehost to the master nodes
      become: true
      become_user: kube

@@ -9,8 +9,8 @@ terraform {
   }
 
   // for gitlab ci
-  backend "http" {
-  }
+  //backend "http" {
+  //}
 }
 
 provider "google" {
@@ -92,4 +92,3 @@ resource "google_compute_address" "static_ip_load_balancer_masters" {
   purpose      = "GCE_ENDPOINT"
   subnetwork   = google_compute_subnetwork.kubernetes_subnetwork.self_link
 }
-
