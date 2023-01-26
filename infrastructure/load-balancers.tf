@@ -65,8 +65,9 @@ resource "google_compute_instance_group" "kubernetes_masters_instance_group" {
   instances = google_compute_instance.kubernetes_masters.*.id
 }
 
-resource "google_compute_health_check" "kubernetes_masters_health_check" {
+resource "google_compute_region_health_check" "kubernetes_masters_health_check" {
   name                = "kubernetes-masters-health-check"
+  region              = var.region
   timeout_sec         = 1
   check_interval_sec  = 1
   healthy_threshold   = 4
