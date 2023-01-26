@@ -9,8 +9,8 @@ terraform {
   }
 
   // for gitlab ci
-  backend "http" {
-  }
+  //backend "http" {
+  //}
 }
 
 provider "google" {
@@ -75,7 +75,12 @@ resource "google_compute_address" "static_ip_bastion" {
   name = "kubernetes-master"
 }
 
-resource "google_compute_address" "static_ip_load_balancer" {
+resource "google_compute_address" "static_ip_load_balancer_workers" {
   name = "load-balancer"
+}
+
+resource "google_compute_address" "static_ip_load_balancer_masters" {
+  name = "load-balancer"
+  address_type = "INTERNAL"
 }
 

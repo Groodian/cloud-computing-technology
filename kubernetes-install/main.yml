@@ -15,8 +15,11 @@
 - name: Install kubernetes
   ansible.builtin.import_playbook: install-kubernetes.yml
 
-- name: Configure masters
-  ansible.builtin.import_playbook: masters.yml
+- name: Configure first master
+  ansible.builtin.import_playbook: first-master.yml
+
+- name: Let the masters join the cluster
+  ansible.builtin.import_playbook: join-masters.yml
 
 - name: Let the workers join the cluster
   ansible.builtin.import_playbook: join-workers.yml

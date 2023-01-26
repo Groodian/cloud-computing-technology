@@ -38,10 +38,11 @@ resource "google_compute_instance" "bastion" {
 
 }
 
-resource "google_compute_instance" "kubernetes_master" {
+resource "google_compute_instance" "kubernetes_masters" {
   name         = "kubernetes-master"
   machine_type = "e2-medium"
   tags         = ["allow-ssh-cluster", "allow-kubernetes", "allow-grafana", "allow-all-kubernetes", "allow-flannel"] // this receives the firewall rule
+  count        = var.master_count
 
   metadata = {
     ssh-keys = "${var.cluster_user}:${tls_private_key.ssh_cluster.public_key_openssh}"
