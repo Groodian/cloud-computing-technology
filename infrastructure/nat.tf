@@ -1,6 +1,6 @@
 resource "google_compute_router" "router" {
   name    = "router"
-  network = google_compute_subnetwork.kubernetes_subnetwork.id
+  network = google_compute_network.kubernetes_network.id
 }
 
 resource "google_compute_router_nat" "nat" {

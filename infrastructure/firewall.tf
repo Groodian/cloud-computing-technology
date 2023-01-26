@@ -1,6 +1,6 @@
 resource "google_compute_firewall" "allow_ssh_bastion" {
   name          = "allow-ssh-bastion"
-  network       = google_compute_subnetwork.kubernetes_subnetwork.name
+  network       = google_compute_network.kubernetes_network.name
   target_tags   = ["allow-ssh-bastion"] // this targets our tagged VM
   source_ranges = ["0.0.0.0/0"]
 
@@ -12,7 +12,7 @@ resource "google_compute_firewall" "allow_ssh_bastion" {
 
 resource "google_compute_firewall" "allow_ssh_cluster" {
   name          = "allow-ssh-cluster"
-  network       = google_compute_subnetwork.kubernetes_subnetwork.name
+  network       = google_compute_network.kubernetes_network.name
   target_tags   = ["allow-ssh-cluster"] // this targets our tagged VM
   source_ranges = ["10.0.0.0/8"]
 
@@ -24,7 +24,7 @@ resource "google_compute_firewall" "allow_ssh_cluster" {
 
 resource "google_compute_firewall" "allow_kubernetes" {
   name          = "allow-kubernetes"
-  network       = google_compute_subnetwork.kubernetes_subnetwork.name
+  network       = google_compute_network.kubernetes_network.name
   target_tags   = ["allow-kubernetes"] // this targets our tagged VM
   source_ranges = ["0.0.0.0/0"]
 
@@ -36,7 +36,7 @@ resource "google_compute_firewall" "allow_kubernetes" {
 
 resource "google_compute_firewall" "allow_grafana" {
   name          = "allow-grafana"
-  network       = google_compute_subnetwork.kubernetes_subnetwork.name
+  network       = google_compute_network.kubernetes_network.name
   target_tags   = ["allow-grafana"] // this targets our tagged VM
   source_ranges = ["0.0.0.0/0"]
 
@@ -48,7 +48,7 @@ resource "google_compute_firewall" "allow_grafana" {
 
 resource "google_compute_firewall" "allow_all_kubernetes" {
   name          = "allow-all-kubernetes"
-  network       = google_compute_subnetwork.kubernetes_subnetwork.name
+  network       = google_compute_network.kubernetes_network.name
   target_tags   = ["allow-all-kubernetes"] // this targets our tagged VM
   source_ranges = ["10.0.0.0/8"]
 
@@ -60,7 +60,7 @@ resource "google_compute_firewall" "allow_all_kubernetes" {
 
 resource "google_compute_firewall" "allow_flannel" {
   name          = "allow-flannel"
-  network       = google_compute_subnetwork.kubernetes_subnetwork.name
+  network       = google_compute_network.kubernetes_network.name
   target_tags   = ["allow-flannel"] // this targets our tagged VM
   source_ranges = ["10.0.0.0/8"]
 
