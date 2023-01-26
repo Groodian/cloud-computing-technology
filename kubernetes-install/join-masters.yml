@@ -3,6 +3,7 @@
 
   tasks:
    - name: Wait until the file /tmp/kubernetes_masters_join_command is present
+     delegate_to: localhost
      ansible.builtin.wait_for:
       path: /tmp/kubernetes_masters_join_command
 
