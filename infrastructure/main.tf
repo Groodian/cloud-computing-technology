@@ -83,11 +83,11 @@ resource "google_compute_address" "static_ip_bastion" {
 }
 
 resource "google_compute_address" "static_ip_load_balancer_workers" {
-  name = "load-balancer"
+  name = "load-balancer-workers"
 }
 
 resource "google_compute_address" "static_ip_load_balancer_masters" {
-  name         = "load-balancer"
+  name         = "load-balancer-masters"
   address_type = "INTERNAL"
   purpose      = "GCE_ENDPOINT"
   subnetwork   = google_compute_subnetwork.kubernetes_subnetwork.self_link
