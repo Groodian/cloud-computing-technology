@@ -4,7 +4,7 @@ resource "google_compute_forwarding_rule" "load_balancer_kubernetes_workers" {
   name                  = "load-balancer-kubernetes-workers"
   target                = google_compute_target_pool.kubernetes_workers_target_pool.self_link
   load_balancing_scheme = "EXTERNAL"
-  port_range            = null
+  all_ports             = true
   ip_address            = google_compute_address.static_ip_load_balancer_workers.self_link
   ip_protocol           = "TCP"
   network_tier          = "PREMIUM"
@@ -37,7 +37,7 @@ resource "google_compute_forwarding_rule" "load_balancer_kubernetes_masters" {
   project               = var.project
   name                  = "load-balancer-kubernetes-masters"
   load_balancing_scheme = "INTERNAL"
-  port_range            = null
+  ports                 = ["6443"]
   ip_address            = google_compute_address.static_ip_load_balancer_masters.self_link
   ip_protocol           = "TCP"
   network_tier          = "PREMIUM"
