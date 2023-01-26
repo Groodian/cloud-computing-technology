@@ -39,7 +39,7 @@ resource "google_compute_instance" "bastion" {
 }
 
 resource "google_compute_instance" "kubernetes_masters" {
-  name         = "kubernetes-master"
+  name         = "kubernetes-master-${count.index}"
   machine_type = "e2-medium"
   tags         = ["allow-ssh-cluster", "allow-kubernetes", "allow-grafana", "allow-all-kubernetes", "allow-flannel"] // this receives the firewall rule
   count        = var.master_count
