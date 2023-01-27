@@ -20,7 +20,7 @@
         mkdir -p $HOME/.kube
         sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
         sudo chown $(id -u):$(id -g) $HOME/.kube/config
-        
+
     - name: Deploy a pod network
       become: true
       become_user: kube
@@ -41,4 +41,4 @@
 
     - name: Copy certificate key to local file
       become: false
-      local_action: copy content="{{ kubernetes_certificate_key.stdout_lines[0] }} --control-plane --certificate-key {{ kubernetes_join_command.stdout_lines[0] }}" dest="/tmp/kubernetes_masters_join_command"
+      local_action: copy content="{{ kubernetes_join_command.stdout_lines[0] }} --control-plane --certificate-key {{ kubernetes_certificate_key.stdout_lines[2] }}" dest="/tmp/kubernetes_masters_join_command"

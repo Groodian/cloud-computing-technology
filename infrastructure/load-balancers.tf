@@ -44,6 +44,7 @@ resource "google_compute_forwarding_rule" "load_balancer_kubernetes_masters" {
   subnetwork            = google_compute_subnetwork.kubernetes_subnetwork.self_link
   backend_service       = google_compute_region_backend_service.kubernetes_masters_backend_service.self_link
   region                = var.region
+    
 }
 
 resource "google_compute_region_backend_service" "kubernetes_masters_backend_service" {
