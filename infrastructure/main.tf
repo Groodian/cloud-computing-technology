@@ -3,6 +3,9 @@ terraform {
     google = {
       source = "hashicorp/google"
     }
+    google-beta = {
+      source = "hashicorp/google-beta"
+    }
     tls = {
       source = "hashicorp/tls"
     }
@@ -14,6 +17,13 @@ terraform {
 }
 
 provider "google" {
+  credentials = file(var.credentials_file)
+  project     = var.project
+  region      = var.region
+  zone        = var.zone
+}
+
+provider "google-beta" {
   credentials = file(var.credentials_file)
   project     = var.project
   region      = var.region
@@ -89,6 +99,6 @@ resource "google_compute_address" "static_ip_load_balancer_workers" {
 resource "google_compute_address" "static_ip_load_balancer_masters" {
   name         = "load-balancer-masters"
   address_type = "INTERNAL"
-  purpose      = "GCE_ENDPOINT"
+  purpose      = "SHARED_LOADBALANCER_VIP"
   subnetwork   = google_compute_subnetwork.kubernetes_subnetwork.self_link
 }

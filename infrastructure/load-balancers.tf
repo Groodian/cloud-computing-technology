@@ -36,28 +36,36 @@ resource "google_compute_forwarding_rule" "load_balancer_kubernetes_masters" {
   provider              = google
   project               = var.project
   name                  = "load-balancer-kubernetes-masters"
-  load_balancing_scheme = "INTERNAL"
+  load_balancing_scheme = "INTERNAL_MANAGED"
   ports                 = ["6443"]
   ip_address            = google_compute_address.static_ip_load_balancer_masters.self_link
   ip_protocol           = "TCP"
   network_tier          = "PREMIUM"
   subnetwork            = google_compute_subnetwork.kubernetes_subnetwork.self_link
-  backend_service       = google_compute_region_backend_service.kubernetes_masters_backend_service.self_link
+  target                = google_compute_region_target_tcp_proxy.kubernetes_masters_target_tcp_proxy.self_link
   region                = var.region
-    
 }
 
 resource "google_compute_region_backend_service" "kubernetes_masters_backend_service" {
   name                  = "kubernetes-masters-backend-service"
   region                = var.region
-  load_balancing_scheme = "INTERNAL"
+  load_balancing_scheme = "INTERNAL_MANGED"
   protocol              = "TCP"
   session_affinity      = "NONE"
   health_checks         = [google_compute_region_health_check.kubernetes_masters_health_check.self_link]
 
   backend {
-    group = google_compute_instance_group.kubernetes_masters_instance_group.self_link
+    group                        = google_compute_instance_group.kubernetes_masters_instance_group.self_link
+    balancing_mode               = "CONNECTION"
   }
+}
+
+resource "google_compute_region_target_tcp_proxy" "kubernetes_masters_target_tcp_proxy" {
+  provider        = google-beta
+  name            = "kubernetes-masters-target-tcp-proxy"
+  region          = var.region
+  backend_service = google_compute_region_backend_service.kubernetes_masters_backend_service.self_link
+  proxy_header    = "NONE"
 }
 
 resource "google_compute_instance_group" "kubernetes_masters_instance_group" {
