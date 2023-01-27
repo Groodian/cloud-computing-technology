@@ -15,7 +15,7 @@ resource "google_compute_instance" "bastion" {
   }
 
   network_interface {
-    subnetwork = google_compute_subnetwork.kubernetes_subnetwork.name
+    network = google_compute_network.kubernetes_network.name
 
     access_config {
       nat_ip = google_compute_address.static_ip_bastion.address
@@ -38,11 +38,10 @@ resource "google_compute_instance" "bastion" {
 
 }
 
-resource "google_compute_instance" "kubernetes_masters" {
-  name         = "kubernetes-master-${count.index}"
+resource "google_compute_instance" "kubernetes_master" {
+  name         = "kubernetes-master"
   machine_type = "e2-medium"
   tags         = ["allow-ssh-cluster", "allow-kubernetes", "allow-grafana", "allow-all-kubernetes", "allow-flannel"] // this receives the firewall rule
-  count        = var.master_count
 
   metadata = {
     ssh-keys = "${var.cluster_user}:${tls_private_key.ssh_cluster.public_key_openssh}"
@@ -56,7 +55,7 @@ resource "google_compute_instance" "kubernetes_masters" {
   }
 
   network_interface {
-    subnetwork = google_compute_subnetwork.kubernetes_subnetwork.name
+    network = google_compute_network.kubernetes_network.name
   }
 
   provisioner "remote-exec" {
@@ -96,7 +95,7 @@ resource "google_compute_instance" "kubernetes_worker" {
   }
 
   network_interface {
-    subnetwork = google_compute_subnetwork.kubernetes_subnetwork.name
+    network = google_compute_network.kubernetes_network.name
   }
 
   provisioner "remote-exec" {

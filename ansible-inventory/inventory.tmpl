@@ -1,11 +1,5 @@
 [masters]
-%{ for kubernetes_master_name_index, kubernetes_master_name in kubernetes_masters_name ~}
-%{ for kubernetes_master_address_index, kubernetes_master_address in kubernetes_masters_address ~}
-%{ if kubernetes_master_name_index == kubernetes_master_address_index ~}
 ${kubernetes_master_name} ansible_host=${kubernetes_master_address}
-%{ endif ~}
-%{ endfor ~}
-%{ endfor ~}
 
 [workers]
 %{ for kubernetes_worker_name_index, kubernetes_worker_name in kubernetes_workers_name ~}
@@ -28,4 +22,3 @@ ansible_ssh_common_args='-o ProxyCommand="ssh -o StrictHostKeyChecking=no -oUser
 
 [all:vars]
 grafana_port=${grafana_port}
-load_balancer_kubernetes_masters=${load_balancer_kubernetes_masters}
