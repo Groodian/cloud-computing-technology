@@ -15,10 +15,10 @@ resource "local_file" "ansible_inventory" {
   })
   filename = "../ansible-inventory/inventory"
 
-  /*provisioner "local-exec" {
+  provisioner "local-exec" {
     working_dir = "../ansible-inventory/"
     command     = "ansible-playbook main.yml"
-  }*/
+  }
 
   depends_on = [
     google_compute_router_nat.nat,
