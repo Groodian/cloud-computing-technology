@@ -42,7 +42,7 @@ resource "google_compute_firewall" "allow_grafana" {
 
   allow {
     protocol = "tcp"
-    ports    = ["80", "443", "8080", "8443", var.grafana_port]
+    ports    = ["80", "443", "8080", "8443", var.grafana_port, "30000-32767"]
   }
 }
 
@@ -54,7 +54,7 @@ resource "google_compute_firewall" "allow_all_kubernetes" {
 
   allow {
     protocol = "tcp"
-    ports    = ["6443", "2379-2380", "10250", "10259", "10257", "30000-32767"]
+    ports    = ["6443", "2379-2380", "10250", "10259", "10257"]
   }
 }
 
