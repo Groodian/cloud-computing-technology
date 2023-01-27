@@ -28,7 +28,7 @@ resource "google_compute_http_health_check" "kubernetes_workers_target_pool_heal
   check_interval_sec  = 1
   healthy_threshold   = 4
   unhealthy_threshold = 2
-  port                = var.grafana_port # check if grafana is running
+  port                = var.grafana_port // check if grafana is running
   request_path        = "/login"
 }
 
@@ -44,7 +44,7 @@ resource "google_compute_forwarding_rule" "load_balancer_kubernetes_masters" {
   subnetwork            = google_compute_subnetwork.kubernetes_subnetwork.self_link
   backend_service       = google_compute_region_backend_service.kubernetes_masters_backend_service.self_link
   region                = var.region
-    
+
 }
 
 resource "google_compute_region_backend_service" "kubernetes_masters_backend_service" {
@@ -63,7 +63,7 @@ resource "google_compute_region_backend_service" "kubernetes_masters_backend_ser
 resource "google_compute_instance_group" "kubernetes_masters_instance_group" {
   name      = "kubernetes-masters-instance-group"
   zone      = var.zone
-  instances = google_compute_instance.kubernetes_masters.*.id
+  instances = [google_compute_instance.kubernetes_masters.0.id] // work around
 }
 
 resource "google_compute_region_health_check" "kubernetes_masters_health_check" {
