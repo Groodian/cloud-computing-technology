@@ -7,7 +7,10 @@ The folder [infrastructure](infrastructure/) contains terraform files to deploy 
 The folder [kubernetes-install](kubernetes-install/) contains ansible scripts to deploy the kubernetes cluster to the deployed infrastructure.
 
 ## Kubernetes Deploy
-The folder [kubernetes-deploys](kubernetes-deploys/) contains terraform files to deploy applications like prometheus to the kubernetes cluster.
+The folder [kubernetes-deploys](kubernetes-deploys/) contains ansible scripts to deploy applications like prometheus to the kubernetes cluster.
+
+## Ansible Inventory
+The folder [ansible-inventory](ansible-inventory/) contains the ansible config.
 
 ## Connect to a node example
 ```
